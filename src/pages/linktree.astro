@@ -1,0 +1,458 @@
+---
+import BaseHead from '../components/BaseHead.astro'
+
+const title = 'Projeto Padres para Igreja de Tocantins'
+const description =
+    'Fortalecendo a cultura vocacional e promovendo o discernimento ao ministério presbiteral no Tocantins.'
+
+// Links configuration
+const links = [
+    { text: 'Sobre o Projeto', href: '#', isModal: true },
+    { text: 'Agenda Vocacional 2025', href: '#' },
+    { text: 'Canal no YouTube', href: '#' },
+    { text: 'Entre em Contato', href: '#' }
+]
+
+const socialLinks = [
+    { icon: 'fab fa-instagram', href: '#', label: 'Instagram' },
+    { icon: 'fab fa-facebook', href: '#', label: 'Facebook' },
+    { icon: 'fab fa-whatsapp', href: '#', label: 'WhatsApp' },
+    { icon: 'fas fa-envelope', href: '#', label: 'Email' }
+]
+
+const pillars = [
+    { icon: 'fas fa-hands-praying', title: 'Oração', description: 'O sustento de toda vocação.' },
+    { icon: 'fas fa-book-open', title: 'Formação', description: 'Cursos e capacitação do clero.' },
+    { icon: 'fas fa-user-plus', title: 'Chamado', description: 'Convite pessoal e escuta.' },
+    { icon: 'fas fa-bullhorn', title: 'Divulgação', description: 'Visibilidade e testemunhos.' }
+]
+---
+
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <BaseHead title={title} description={description} />
+        <!-- Font Awesome Icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    </head>
+    <body class="linktree-body">
+        <div class="linktree-container">
+            <!-- Profile Section -->
+            <div class="profile-section animate-in">
+                <div class="profile-img">
+                    <i class="fas fa-cross"></i>
+                </div>
+                <h1 class="profile-name">Projeto Padres</h1>
+                <p class="profile-bio">Igreja de Tocantins</p>
+            </div>
+
+            <!-- Links List -->
+            <div class="links-list animate-in delay-1">
+                {
+                    links.map(link =>
+                        link.isModal ? (
+                            <button class="link-btn" data-modal-trigger>
+                                {link.text}
+                            </button>
+                        ) : (
+                            <a href={link.href} class="link-btn">
+                                {link.text}
+                            </a>
+                        )
+                    )
+                }
+            </div>
+
+            <!-- Social Footer -->
+            <div class="social-footer animate-in delay-2">
+                {
+                    socialLinks.map(social => (
+                        <a href={social.href} class="social-icon" aria-label={social.label}>
+                            <i class={social.icon} />
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- Modal for Pillars/About -->
+        <div class="modal-overlay" id="aboutModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Nossos Pilares</h2>
+                    <button class="modal-close" aria-label="Fechar modal">&times;</button>
+                </div>
+
+                <div class="modal-intro">
+                    <p>
+                        Uma iniciativa para despertar e cultivar vocações ao sacerdócio, ajudando comunidades e jovens a
+                        acolherem o chamado de Deus.
+                    </p>
+                </div>
+
+                <div class="pillars-grid">
+                    {
+                        pillars.map(pillar => (
+                            <div class="pillar-item">
+                                <div class="pillar-icon-modal">
+                                    <i class={pillar.icon} />
+                                </div>
+                                <div class="pillar-text">
+                                    <h3>{pillar.title}</h3>
+                                    <p>{pillar.description}</p>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Modal functionality
+            const modal = document.getElementById('aboutModal')
+            const modalTrigger = document.querySelector('[data-modal-trigger]')
+            const modalClose = document.querySelector('.modal-close')
+
+            function openModal() {
+                modal?.classList.add('active')
+                document.body.style.overflow = 'hidden'
+            }
+
+            function closeModal() {
+                modal?.classList.remove('active')
+                document.body.style.overflow = ''
+            }
+
+            modalTrigger?.addEventListener('click', openModal)
+            modalClose?.addEventListener('click', closeModal)
+            modal?.addEventListener('click', e => {
+                if (e.target === modal) closeModal()
+            })
+
+            // Close on escape key
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') closeModal()
+            })
+        </script>
+
+        <style>
+            /* Linktree Page Styles */
+            .linktree-body {
+                min-height: 100vh;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem 1rem;
+                font-family: 'Inter', var(--font-body), sans-serif;
+            }
+
+            .linktree-container {
+                width: 100%;
+                max-width: 480px;
+                text-align: center;
+            }
+
+            /* Animations */
+            .animate-in {
+                animation: fadeInUp 0.6s ease-out forwards;
+                opacity: 0;
+            }
+
+            .delay-1 {
+                animation-delay: 0.15s;
+            }
+
+            .delay-2 {
+                animation-delay: 0.3s;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Profile Section */
+            .profile-section {
+                margin-bottom: 2rem;
+            }
+
+            .profile-img {
+                width: 100px;
+                height: 100px;
+                margin: 0 auto 1.25rem;
+                background: linear-gradient(135deg, var(--color-azul, #00aeef), var(--color-verde, #62a884));
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow:
+                    0 10px 40px rgba(0, 174, 239, 0.3),
+                    0 0 0 4px rgba(255, 255, 255, 0.1);
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+
+            .profile-img:hover {
+                transform: scale(1.05);
+                box-shadow:
+                    0 15px 50px rgba(0, 174, 239, 0.4),
+                    0 0 0 6px rgba(255, 255, 255, 0.15);
+            }
+
+            .profile-img i {
+                font-size: 2.5rem;
+                color: white;
+            }
+
+            .profile-name {
+                font-family: var(--font-display, 'Playfair Display'), Georgia, serif;
+                font-size: 2rem;
+                font-weight: 700;
+                color: white;
+                margin: 0 0 0.5rem;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .profile-bio {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1rem;
+                margin: 0;
+                font-weight: 400;
+            }
+
+            /* Links List */
+            .links-list {
+                display: flex;
+                flex-direction: column;
+                gap: 0.875rem;
+                margin-bottom: 2rem;
+            }
+
+            .link-btn {
+                display: block;
+                width: 100%;
+                padding: 1rem 1.5rem;
+                background: rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 16px;
+                color: white;
+                font-size: 1rem;
+                font-weight: 500;
+                text-decoration: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-family: inherit;
+                text-align: center;
+            }
+
+            .link-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.25);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .link-btn:active {
+                transform: translateY(-1px);
+            }
+
+            /* Social Footer */
+            .social-footer {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                padding-top: 1rem;
+            }
+
+            .social-icon {
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                color: white;
+                font-size: 1.25rem;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .social-icon:hover {
+                background: var(--color-azul, #00aeef);
+                transform: translateY(-3px) scale(1.1);
+                box-shadow: 0 8px 25px rgba(0, 174, 239, 0.4);
+                border-color: transparent;
+            }
+
+            /* Modal */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(5px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 1rem;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+            }
+
+            .modal-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .modal-content {
+                background: white;
+                border-radius: 24px;
+                padding: 2rem;
+                width: 100%;
+                max-width: 500px;
+                max-height: 90vh;
+                overflow-y: auto;
+                transform: scale(0.9) translateY(20px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            }
+
+            .modal-overlay.active .modal-content {
+                transform: scale(1) translateY(0);
+            }
+
+            .modal-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+            }
+
+            .modal-header h2 {
+                font-family: var(--font-display, 'Playfair Display'), Georgia, serif;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--color-grafite, #1a1a1a);
+                margin: 0;
+            }
+
+            .modal-close {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f5f5f5;
+                border: none;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                color: #666;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .modal-close:hover {
+                background: #eee;
+                color: #333;
+            }
+
+            .modal-intro {
+                margin-bottom: 1.5rem;
+                color: #555;
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            .modal-intro p {
+                margin: 0;
+            }
+
+            /* Pillars Grid */
+            .pillars-grid {
+                display: grid;
+                gap: 1rem;
+            }
+
+            .pillar-item {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+                border-radius: 16px;
+                border: 1px solid #eee;
+                transition: all 0.3s ease;
+            }
+
+            .pillar-item:hover {
+                transform: translateX(5px);
+                border-color: var(--color-azul, #00aeef);
+                box-shadow: 0 5px 20px rgba(0, 174, 239, 0.1);
+            }
+
+            .pillar-icon-modal {
+                width: 50px;
+                height: 50px;
+                min-width: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, var(--color-azul, #00aeef), var(--color-verde, #62a884));
+                border-radius: 12px;
+                color: white;
+                font-size: 1.25rem;
+            }
+
+            .pillar-text h3 {
+                font-family: var(--font-display, 'Playfair Display'), Georgia, serif;
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--color-grafite, #1a1a1a);
+                margin: 0 0 0.25rem;
+            }
+
+            .pillar-text p {
+                font-size: 0.875rem;
+                color: #666;
+                margin: 0;
+                line-height: 1.4;
+            }
+
+            /* Responsive */
+            @media (max-width: 480px) {
+                .profile-name {
+                    font-size: 1.75rem;
+                }
+
+                .profile-img {
+                    width: 85px;
+                    height: 85px;
+                }
+
+                .profile-img i {
+                    font-size: 2rem;
+                }
+
+                .modal-content {
+                    padding: 1.5rem;
+                }
+            }
+        </style>
+    </body>
+</html>

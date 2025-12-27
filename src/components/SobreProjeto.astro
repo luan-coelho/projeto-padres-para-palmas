@@ -1,0 +1,77 @@
+---
+interface Props {
+    sectionLabel?: string
+    title?: string
+    titleHighlight?: string
+    paragraphs?: string[]
+    buttonText?: string
+    buttonLink?: string
+    image?: string
+}
+
+const {
+    sectionLabel = 'Sobre o Projeto',
+    title = 'Um movimento impulsionado pelo',
+    titleHighlight = 'desejo de cultivar vocações',
+    paragraphs = [
+        'Mais que uma ação pastoral ou um programa, o Projeto Padres para a Igreja de Palmas se configura como um movimento em desenvolvimento, impulsionado pelo desejo de cultivar novas vocações para o sacerdócio.',
+        'Nascido do coração da Arquidiocese de Palmas, este projeto busca despertar nos jovens o chamado ao ministério presbiteral, fortalecendo a cultura vocacional em nossa Igreja local.'
+    ],
+    buttonText = 'Saiba mais',
+    buttonLink = '#pilares',
+    image = '/images/cartaz.jpg'
+} = Astro.props
+---
+
+<section id="sobre" class="py-20 lg:py-28 bg-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <!-- Image -->
+            <div class="relative">
+                <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+                    <img src={image} alt="Sobre o Projeto" class="w-full h-full object-cover" />
+                </div>
+                <!-- Decorative element -->
+                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-amarelo/20 rounded-full -z-10"></div>
+                <div class="absolute -top-6 -left-6 w-24 h-24 bg-verde/20 rounded-full -z-10"></div>
+            </div>
+
+            <!-- Content -->
+            <div>
+                <span class="inline-block text-verde font-semibold text-sm uppercase tracking-wider mb-4">
+                    {sectionLabel}
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-light text-grafite mb-6 leading-tight">
+                    {title}
+                    <span class="font-semibold">{titleHighlight}</span>
+                </h2>
+                {paragraphs.map(paragraph => <p class="text-grafite/80 text-lg leading-relaxed mb-6">{paragraph}</p>)}
+                <a
+                    href={buttonLink}
+                    class="inline-flex items-center gap-2 bg-azul hover:bg-azul/90 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300">
+                    {buttonText}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3">
+                        </path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SVG Wave Separator -->
+<div class="bg-white">
+    <svg
+        viewBox="0 0 1440 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+        class="w-full h-16">
+        <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#F9FAFB"></path>
+    </svg>
+</div>
