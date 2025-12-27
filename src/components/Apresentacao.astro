@@ -1,23 +1,22 @@
 ---
 interface Props {
-    title?: string;
-    titleHighlight?: string;
-    description?: string;
+    title?: string
+    titleHighlight?: string
+    description?: string
 }
 
 const {
     title = 'Nascemos para fortalecer a',
     titleHighlight = 'cultura vocacional',
     description = 'O Projeto Padres para a Igreja de Palmas, da Arquidiocese de Palmas-TO, será lançado intensamente a partir do mês de fevereiro, com abertura programada para o dia <strong>20 de fevereiro de 2026</strong>, na Paróquia São José às 19h30, inserido no contexto dos 30 anos da Arquidiocese de Palmas.'
-} = Astro.props;
+} = Astro.props
 ---
 
 <section id="apresentacao" class="py-20 lg:py-28 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-light text-grafite mb-8 leading-tight">
-            {title}<br><span class="font-semibold text-azul">{titleHighlight}</span>
+            {title}<br /><span class="font-semibold text-azul">{titleHighlight}</span>
         </h2>
-        <p class="text-lg sm:text-xl text-grafite/80 leading-relaxed max-w-3xl mx-auto" set:html={description}>
-        </p>
+        <p class="text-lg sm:text-xl text-grafite/80 leading-relaxed max-w-3xl mx-auto" set:html={description} />
     </div>
 </section>

@@ -1,20 +1,20 @@
 ---
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
-import '../styles/global.css';
-import type { ImageMetadata } from 'astro';
-import { SITE_TITLE } from '../consts';
+import '../styles/global.css'
+import type { ImageMetadata } from 'astro'
+import { SITE_TITLE } from '../consts'
 
 interface Props {
-	title: string;
-	description: string;
-	image?: ImageMetadata | string;
+    title: string
+    description: string
+    image?: ImageMetadata | string
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 
-const { title, description, image = '/images/logo-colorida.png' } = Astro.props;
-const imageUrl = typeof image === 'string' ? image : image.src;
+const { title, description, image = '/images/logo-colorida.png' } = Astro.props
+const imageUrl = typeof image === 'string' ? image : image.src
 ---
 
 <!-- Global Metadata -->
@@ -22,17 +22,12 @@ const imageUrl = typeof image === 'string' ? image : image.src;
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link
-	rel="alternate"
-	type="application/rss+xml"
-	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
-/>
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
 <meta name="generator" content={Astro.generator} />
 
 <!-- Google Fonts Preconnect -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
