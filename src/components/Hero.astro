@@ -15,7 +15,7 @@ const {
     citation = '"Farei de ti pescador de homens" (Mt 4,19)',
     buttonText = 'Conheça o Projeto',
     buttonLink = '#sobre',
-    backgroundImage = '/images/barco.png',
+    backgroundImage = '/images/barco-com-jesus-desktop.png',
     logoImage = '/images/logo-branca-st.png'
 } = Astro.props
 ---
@@ -23,7 +23,12 @@ const {
 <section id="hero" class="relative min-h-screen flex items-center justify-center">
     <!-- Background Image -->
     <div class="absolute inset-0">
-        <img src={backgroundImage} alt="Hero Background" class="w-full h-full object-cover" />
+        <img src={backgroundImage} alt="Hero Background" class="hidden sm:block w-full h-full object-cover" />
+        <img
+            src="/images/barco-com-jesus-mobile-v6.png"
+            alt="Hero Background"
+            class="block sm:hidden w-full h-full object-cover"
+        />
         <div class="hero-overlay absolute inset-0"></div>
     </div>
 

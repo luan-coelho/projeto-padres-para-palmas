@@ -8,12 +8,8 @@ import Apresentacao from '../components/Apresentacao.astro'
 import Destaques from '../components/Destaques.astro'
 import SobreProjeto from '../components/SobreProjeto.astro'
 import Pilares from '../components/Pilares.astro'
-import Noticias from '../components/Noticias.astro'
 import Contato from '../components/Contato.astro'
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'
-
-// Buscar posts do blog ordenados por data
-const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 ---
 
 <!doctype html>
@@ -39,9 +35,6 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
 
             <!-- Pilares do Projeto -->
             <Pilares />
-
-            <!-- Notícias -->
-            <Noticias posts={posts} />
 
             <!-- Contato -->
             <Contato />
