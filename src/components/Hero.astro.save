@@ -1,17 +1,12 @@
----
-import { Image } from 'astro:assets'
-import heroBgDesktop from '../assets/images/barco-com-jesus-desktop.png'
-import heroBgMobile from '../assets/images/barco-com-jesus-mobile-v6.png'
-import logoBrancaSt from '../assets/images/logo-branca-st.png'
-
+OO---
 interface Props {
     title?: string
     subtitle?: string
     citation?: string
     buttonText?: string
     buttonLink?: string
-    backgroundImage?: ImageMetadata
-    logoImage?: ImageMetadata
+    backgroundImage?: string
+    logoImage?: string
 }
 
 const {
@@ -20,23 +15,27 @@ const {
     citation = '"Farei de ti pescador de homens" (Mt 4,19)',
     buttonText = 'Conheça o Projeto',
     buttonLink = '#sobre',
-    backgroundImage = heroBgDesktop,
-    logoImage = logoBrancaSt
+    backgroundImage = '/images/barco-com-jesus-desktop.png',
+    logoImage = '/images/logo-branca-st.png'
 } = Astro.props
 ---
 
 <section id="hero" class="relative min-h-screen flex items-center justify-center">
     <!-- Background Image -->
     <div class="absolute inset-0">
-        <Image src={backgroundImage} alt="Hero Background" class="hidden sm:block w-full h-full object-cover" />
-        <Image src={heroBgMobile} alt="Hero Background" class="block sm:hidden w-full h-full object-cover" />
+        <img src={backgroundImage} alt="Hero Background" class="hidden sm:block w-full h-full object-cover" />
+        <img
+            src="/images/barco-com-jesus-mobile-v6.png"
+            alt="Hero Background"
+            class="block sm:hidden w-full h-full object-cover"
+        />
         <div class="hero-overlay absolute inset-0"></div>
     </div>
 
     <!-- Hero Content -->
     <div class="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <!-- Logo Grande no Hero -->
-        <Image
+        <img
             src={logoImage}
             alt="Projeto Padres para a Igreja de Palmas"
             class="h-32 sm:h-40 lg:h-48 w-auto mx-auto mb-8"

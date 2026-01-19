@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets'
 import { NAV_LINKS } from '../consts'
+import logoColorida from '../assets/images/logo-colorida.png'
 ---
 
 <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
@@ -7,8 +9,8 @@ import { NAV_LINKS } from '../consts'
         <div class="flex items-center justify-between h-20">
             <!-- Logo (oculto no topo, aparece no scroll) -->
             <a href="/" class="flex-shrink-0">
-                <img
-                    src="/images/logo-colorida.png"
+                <Image
+                    src={logoColorida}
                     alt="Projeto Padres"
                     class="h-12 w-auto opacity-0 transition-opacity duration-300"
                     id="header-logo"

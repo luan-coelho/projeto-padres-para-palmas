@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets'
+import logoColorida from '../assets/images/logo-colorida.png'
+
 interface Props {
     sectionLabel?: string
     title?: string
@@ -6,7 +9,7 @@ interface Props {
     paragraphs?: string[]
     buttonText?: string
     buttonLink?: string
-    image?: string
+    image?: ImageMetadata
 }
 
 const {
@@ -19,7 +22,7 @@ const {
     ],
     buttonText = 'Saiba mais',
     buttonLink = '#pilares',
-    image = '/images/cartaz.jpg'
+    image = logoColorida
 } = Astro.props
 ---
 
@@ -27,13 +30,12 @@ const {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <!-- Image -->
-            <div class="relative">
-                <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-                    <img src={image} alt="Sobre o Projeto" class="w-full h-full object-cover" />
-                </div>
-                <!-- Decorative element -->
-                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-amarelo/20 rounded-full -z-10"></div>
-                <div class="absolute -top-6 -left-6 w-24 h-24 bg-verde/20 rounded-full -z-10"></div>
+            <div class="relative flex justify-center items-center">
+                <Image
+                    src={image}
+                    alt="Logo Projeto Padres para Palmas"
+                    class="w-full max-w-md h-auto object-contain"
+                />
             </div>
 
             <!-- Content -->
@@ -63,15 +65,3 @@ const {
         </div>
     </div>
 </section>
-
-<!-- SVG Wave Separator -->
-<div class="bg-white">
-    <svg
-        viewBox="0 0 1440 80"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="none"
-        class="w-full h-16">
-        <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#F9FAFB"></path>
-    </svg>
-</div>

@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets'
+import logoColoridaSt from '../assets/images/logo-colorida-st.png'
 import BaseHead from '../components/BaseHead.astro'
 
 const title = 'Projeto Padres para a Igreja de Palmas'
@@ -45,7 +47,7 @@ const links = [
                 <!-- Profile Section -->
                 <div class="profile-section">
                     <div class="profile-img">
-                        <img src="/images/logo-colorida-st.png" alt="Logo Projeto Padres" />
+                        <Image src={logoColoridaSt} alt="Logo Projeto Padres" />
                     </div>
                     <h1 class="profile-name">Projeto Padres para a Igreja de Palmas</h1>
                     <p class="profile-bio">{description}</p>

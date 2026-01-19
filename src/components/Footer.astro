@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets'
 import { USEFUL_LINKS, SOCIAL_LINKS } from '../consts'
+import logoBranca from '../assets/images/logo-branca.png'
 
 const today = new Date()
 ---
@@ -9,7 +11,7 @@ const today = new Date()
         <div class="grid md:grid-cols-3 gap-12">
             <!-- Logo e Frase -->
             <div class="text-center md:text-left">
-                <img src="/images/logo-branca.png" alt="Projeto Padres" class="h-16 w-auto mx-auto md:mx-0 mb-4" />
+                <Image src={logoBranca} alt="Projeto Padres" class="h-16 w-auto mx-auto md:mx-0 mb-4" />
                 <p class="text-white/80 italic">"Farei de ti pescador de homens" (Mt 4,19)</p>
             </div>
 
