@@ -3,12 +3,13 @@ import BaseHead from '../components/BaseHead.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import type { ImageMetadata } from 'astro'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import Analytics from '@vercel/analytics/astro'
+import SpeedInsights from '@vercel/speed-insights/astro'
 
 interface Props {
-    title: string
-    description: string
-    image?: ImageMetadata | string
+  title: string
+  description: string
+  image?: ImageMetadata | string
 }
 
 const { title, description, image } = Astro.props
@@ -16,15 +17,16 @@ const { title, description, image } = Astro.props
 
 <!doctype html>
 <html lang="pt-BR">
-    <head>
-        <BaseHead title={title} description={description} image={image} />
-    </head>
-    <body class="text-grafite bg-white antialiased">
-        <Header />
-        <main>
-            <slot />
-        </main>
-        <Footer />
-        <SpeedInsights />
-    </body>
+  <head>
+    <BaseHead title={title} description={description} image={image} />
+    <Analytics />
+  </head>
+  <body class="text-grafite bg-white antialiased">
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <SpeedInsights />
+  </body>
 </html>
