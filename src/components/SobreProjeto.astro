@@ -3,65 +3,69 @@ import { Image } from 'astro:assets'
 import logoColorida from '../assets/images/logo-colorida-st.png'
 
 interface Props {
-    sectionLabel?: string
-    title?: string
-    titleHighlight?: string
-    paragraphs?: string[]
-    buttonText?: string
-    buttonLink?: string
-    image?: ImageMetadata
+  sectionLabel?: string
+  title?: string
+  titleHighlight?: string
+  paragraphs?: string[]
+  buttonText?: string
+  buttonLink?: string
+  image?: ImageMetadata
 }
 
 const {
-    sectionLabel = 'Sobre o Projeto',
-    title = 'Um movimento impulsionado pelo',
-    titleHighlight = 'desejo de cultivar vocações',
-    paragraphs = [
-        'Mais que uma ação pastoral ou um programa, o Projeto Padres para a Igreja de Palmas se configura como um movimento em desenvolvimento, impulsionado pelo desejo de cultivar novas vocações para o sacerdócio.',
-        'Nascido do coração da Arquidiocese de Palmas, este projeto busca despertar nos jovens o chamado ao ministério presbiteral, fortalecendo a cultura vocacional em nossa Igreja local.'
-    ],
-    buttonText = 'Saiba mais',
-    buttonLink = '#pilares',
-    image = logoColorida
+  sectionLabel = 'Sobre o Projeto',
+  title = 'Um movimento impulsionado pelo',
+  titleHighlight = 'desejo de cultivar vocações',
+  paragraphs = [
+    'Mais que uma ação pastoral ou um programa, o Projeto Padres para a Igreja de Palmas se configura como um movimento em desenvolvimento, impulsionado pelo desejo de cultivar novas vocações para o sacerdócio.',
+    'Nascido do coração da Arquidiocese de Palmas, este projeto busca despertar nos jovens o chamado ao ministério presbiteral, fortalecendo a cultura vocacional em nossa Igreja local.'
+  ],
+  buttonText = 'Saiba mais',
+  buttonLink = '#pilares',
+  image = logoColorida
 } = Astro.props
 ---
 
-<section id="sobre" class="py-20 lg:py-28 bg-bg-azul relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <!-- Image -->
-            <div class="relative flex justify-center items-center">
-                <Image
-                    src={image}
-                    alt="Logo Projeto Padres para Palmas"
-                    class="w-3/4 sm:w-full max-w-md h-auto object-contain"
-                />
-            </div>
+<section id="sobre" class="bg-bg-azul relative overflow-hidden py-20 lg:py-28">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <!-- Image -->
+      <div class="relative flex items-center justify-center">
+        <Image
+          src={image}
+          alt="Logo Projeto Padres para Palmas"
+          class="h-auto w-3/4 max-w-md object-contain sm:w-full"
+        />
+      </div>
 
-            <!-- Content -->
-            <div>
-                <span class="inline-block text-verde font-semibold text-sm uppercase tracking-wider mb-4">
-                    {sectionLabel}
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-light text-grafite mb-6 leading-tight">
-                    {title}
-                    <span class="font-semibold">{titleHighlight}</span>
-                </h2>
-                {paragraphs.map(paragraph => <p class="text-grafite/80 text-lg leading-relaxed mb-6">{paragraph}</p>)}
-                <a
-                    href={buttonLink}
-                    class="inline-flex items-center gap-2 bg-azul hover:bg-azul/90 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300">
-                    {buttonText}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M17 8l4 4m0 0l-4 4m4-4H3">
-                        </path>
-                    </svg>
-                </a>
-            </div>
-        </div>
+      <!-- Content -->
+      <div>
+        <span class="text-verde mb-4 inline-block text-sm font-semibold tracking-wider uppercase">
+          {sectionLabel}
+        </span>
+        <h2 class="text-grafite mb-6 text-3xl leading-tight font-light sm:text-4xl">
+          {title}
+          <span class="font-semibold">{titleHighlight}</span>
+        </h2>
+        {
+          paragraphs.map(paragraph => (
+            <p class="text-grafite/80 mb-6 text-lg leading-relaxed">{paragraph}</p>
+          ))
+        }
+        <a
+          href={buttonLink}
+          class="bg-azul hover:bg-azul/90 inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white transition-all duration-300">
+          {buttonText}
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3">
+            </path>
+          </svg>
+        </a>
+      </div>
     </div>
+  </div>
 </section>
