@@ -9,7 +9,6 @@ export const SITE_DESCRIPTION =
 export const NAV_LINKS = [
     { href: '/#sobre', label: 'O Projeto' },
     { href: '/#pilares', label: 'Multimídia' },
-    { href: '/blog', label: 'Notícias' },
     { href: '/#contato', label: 'Onde Estamos' },
     { href: '/#contato', label: 'Contato' }
 ]
@@ -23,10 +22,7 @@ export const USEFUL_LINKS = [
 
 // Redes sociais
 export const SOCIAL_LINKS = {
-    facebook: '#',
-    instagram: '#',
-    twitter: '#',
-    youtube: '#'
+    instagram: 'https://www.instagram.com/padresparapalmas'
 }
 
 // Contato
