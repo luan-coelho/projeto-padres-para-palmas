@@ -8,13 +8,21 @@ import logoColorida from '../assets/images/logo-colorida.png'
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
             <!-- Logo (oculto no topo, aparece no scroll) -->
-            <a href="/" class="flex-shrink-0 relative z-50">
+            <a href="/" class="flex items-center gap-3 flex-shrink-0 relative z-50 group">
                 <Image
                     src={logoColorida}
                     alt="Projeto Padres"
                     class="h-12 w-auto opacity-0 transition-opacity duration-300"
                     id="header-logo"
                 />
+                <div
+                    id="header-title"
+                    class="opacity-0 transition-opacity duration-300 text-grafite leading-tight scale-90 sm:scale-100 origin-left">
+                    <span class="font-display font-light text-xs sm:text-sm block">Projeto Padres para a</span>
+                    <span class="font-display font-bold text-xs sm:text-sm block uppercase tracking-wider">
+                        Igreja de Palmas
+                    </span>
+                </div>
             </a>
 
             <!-- Desktop Navigation -->
@@ -184,6 +192,7 @@ import logoColorida from '../assets/images/logo-colorida.png'
     // Header Background and Button Color on Scroll
     const header = document.getElementById('header')
     const headerLogo = document.getElementById('header-logo')
+    const headerTitle = document.getElementById('header-title')
     const navLinks = document.querySelectorAll('.nav-link')
 
     function updateHeader() {
@@ -199,9 +208,11 @@ import logoColorida from '../assets/images/logo-colorida.png'
                 link.classList.add('text-grafite')
             })
 
-            // Show logo
+            // Show logo and title
             headerLogo?.classList.remove('opacity-0')
             headerLogo?.classList.add('opacity-100')
+            headerTitle?.classList.remove('opacity-0')
+            headerTitle?.classList.add('opacity-100')
         } else {
             header?.classList.remove('bg-white', 'shadow-md')
             header?.classList.add('bg-transparent')
@@ -211,9 +222,11 @@ import logoColorida from '../assets/images/logo-colorida.png'
                 link.classList.remove('text-grafite')
             })
 
-            // Hide logo
+            // Hide logo and title
             headerLogo?.classList.add('opacity-0')
             headerLogo?.classList.remove('opacity-100')
+            headerTitle?.classList.add('opacity-0')
+            headerTitle?.classList.remove('opacity-100')
         }
 
         // Handle Mobile Button Color
