@@ -4,11 +4,18 @@
 
 /* Custom Theme - Tailwind CSS v4 */
 @theme {
-    /* Custom Colors */
+    /* Custom Colors - Main Palette */
     --color-azul: #00aeef;
     --color-amarelo: #ffd100;
     --color-verde: #62a884;
+    --color-marrom: #9a7b4f;
     --color-grafite: #1a1a1a;
+
+    /* Soft Background Tints - For alternating sections */
+    --color-bg-amarelo: #fffbeb;
+    --color-bg-azul: #f0faff;
+    --color-bg-verde: #f0f9f5;
+    --color-bg-marrom: #faf7f3;
 
     /* Custom Fonts */
     --font-display: 'Cinzel', serif;
