@@ -100,10 +100,16 @@ export function Gallery({ items }: GalleryProps) {
             <div
               className="fixed inset-0 bg-black/90 backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
-              aria-hidden="true"
+              onKeyDown={e => {
+                if (e.key === 'Escape') setIsOpen(false)
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Close gallery"
             />
 
             {/* Modal Content */}
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
             <div
               className="zoom-in-95 fade-in animate-in bg-background relative z-50 flex h-[95vh] w-full max-w-6xl flex-col overflow-hidden shadow-2xl duration-200 sm:h-[90vh] sm:rounded-2xl"
               onClick={e => e.stopPropagation()}>

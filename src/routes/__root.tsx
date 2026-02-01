@@ -1,12 +1,9 @@
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts'
 
-import appCss from '../styles.css?url'
 import logoColorida from '../assets/images/logo-colorida.png'
+import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -90,18 +87,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-body text-grafite bg-white antialiased">
         {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right'
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />
-            },
-            TanStackQueryDevtools
-          ]}
-        />
         <Scripts />
       </body>
     </html>

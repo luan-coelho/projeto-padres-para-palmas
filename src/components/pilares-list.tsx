@@ -198,11 +198,9 @@ export function PilaresList() {
                   classes.bg,
                   classes.bgHover
                 )}>
-                {Icon && (
-                  <Icon
-                    className={cn('h-7 w-7 transition-colors group-hover:text-white', classes.text)}
-                  />
-                )}
+                <Icon
+                  className={cn('h-7 w-7 transition-colors group-hover:text-white', classes.text)}
+                />
               </div>
               <h3 className="text-grafite mb-2 text-xl font-semibold">{pilar.title}</h3>
               <p className="text-grafite/70 text-sm">{pilar.description}</p>
@@ -234,7 +232,7 @@ export function PilaresList() {
                       )}>
                       {(() => {
                         const Icon = icons[selectedPilar.icon]
-                        return Icon ? <Icon className="h-6 w-6" /> : null
+                        return <Icon className="h-6 w-6" />
                       })()}
                     </div>
                     <h3 className="text-grafite pr-8 text-xl font-semibold sm:text-2xl">

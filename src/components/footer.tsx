@@ -23,7 +23,9 @@ export function Footer({ className, ...props }: FooterProps) {
               alt="Projeto Padres"
               className="mx-auto mb-4 h-16 w-auto md:mx-0"
             />
-            <p className="text-white/80 italic">"Farei de ti pescador de homens" (Mt 4,19)</p>
+            <p className="text-white/80 italic">
+              &quot;Farei de ti pescador de homens&quot; (Mt 4,19)
+            </p>
           </div>
 
           {/* Links Úteis */}

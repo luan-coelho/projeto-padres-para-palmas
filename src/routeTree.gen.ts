@@ -9,65 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as LinktreeRouteImport } from './routes/linktree'
 import { Route as IndexRouteImport } from './routes/index'
 
-const SobreRoute = SobreRouteImport.update({
-  id: '/sobre',
-  path: '/sobre',
-  getParentRoute: () => rootRouteImport
-} as any)
 const LinktreeRoute = LinktreeRouteImport.update({
   id: '/linktree',
   path: '/linktree',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/linktree': typeof LinktreeRoute
-  '/sobre': typeof SobreRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/linktree': typeof LinktreeRoute
-  '/sobre': typeof SobreRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/linktree': typeof LinktreeRoute
-  '/sobre': typeof SobreRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/linktree' | '/sobre'
+  fullPaths: '/' | '/linktree'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/linktree' | '/sobre'
-  id: '__root__' | '/' | '/linktree' | '/sobre'
+  to: '/' | '/linktree'
+  id: '__root__' | '/' | '/linktree'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LinktreeRoute: typeof LinktreeRoute
-  SobreRoute: typeof SobreRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sobre': {
-      id: '/sobre'
-      path: '/sobre'
-      fullPath: '/sobre'
-      preLoaderRoute: typeof SobreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/linktree': {
       id: '/linktree'
       path: '/linktree'
@@ -88,7 +71,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LinktreeRoute: LinktreeRoute,
-  SobreRoute: SobreRoute
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

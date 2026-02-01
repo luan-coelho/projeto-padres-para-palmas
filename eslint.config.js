@@ -9,7 +9,20 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 import { tanstackConfig } from '@tanstack/eslint-config'
 
 export default tseslint.config(
-  { ignores: ['dist', '.vinxi', 'node_modules', '.vercel', '.env', '.env.*', 'public'] },
+  {
+    ignores: [
+      'dist',
+      '.vinxi',
+      'node_modules',
+      '.vercel',
+      '.env',
+      '.env.*',
+      'public',
+      '.output',
+      '.antigravity',
+      '.agent'
+    ]
+  },
   {
     extends: [
       js.configs.recommended,
@@ -31,6 +44,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      '@typescript-eslint/no-empty-object-type': 'off',
       ...jsxA11y.configs.recommended.rules,
       ...pluginReact.configs.flat.recommended.rules,
       ...pluginReact.configs.flat['jsx-runtime'].rules,
