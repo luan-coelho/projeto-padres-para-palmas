@@ -7,9 +7,8 @@ import react from '@astrojs/react'
 
 // https://astro.build/config
 export default defineConfig({
-  // site: 'https://www.padresparapalmas.com.br',
+  site: 'https://www.padresparapalmas.com.br',
   output: 'static',
-  trailingSlash: 'never',
   integrations: [sitemap(), react()],
   vite: {
     plugins: [tailwindcss()]
