@@ -7,14 +7,14 @@ import react from '@astrojs/react'
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://www.padresparapalmas.com.br',
-    integrations: [sitemap(), react()],
-    vite: {
-        plugins: [tailwindcss()]
-    },
-    adapter: vercel({
-        webAnalytics: {
-            enabled: true // set to false when using @vercel/analytics@1.4.0
-        }
-    })
+  site: 'https://www.padresparapalmas.com.br',
+  integrations: [sitemap(), react()],
+  vite: {
+    plugins: [tailwindcss()]
+  },
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true // set to false when using @vercel/analytics@1.4.0
+    }
+  })
 })

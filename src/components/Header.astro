@@ -19,11 +19,11 @@ import logoColorida from '../assets/images/logo-colorida.png'
         />
         <div
           id="header-title"
-          class="text-grafite origin-left scale-90 leading-tight opacity-0 transition-opacity duration-300 sm:scale-100">
-          <span class="font-display block text-xs font-light sm:text-sm">
+          class="origin-left scale-90 leading-tight text-grafite opacity-0 transition-opacity duration-300 sm:scale-100">
+          <span class="block font-display text-xs font-light sm:text-sm">
             Projeto Padres para a
           </span>
-          <span class="font-display block text-xs font-bold tracking-wider uppercase sm:text-sm">
+          <span class="block font-display text-xs font-bold tracking-wider uppercase sm:text-sm">
             Igreja de Palmas
           </span>
         </div>
@@ -35,7 +35,7 @@ import logoColorida from '../assets/images/logo-colorida.png'
           NAV_LINKS.map(link => (
             <a
               href={link.href}
-              class="nav-link hover:text-amarelo font-medium text-white transition-colors">
+              class="nav-link font-medium text-white transition-colors hover:text-amarelo">
               {link.label}
             </a>
           ))
@@ -82,13 +82,13 @@ import logoColorida from '../assets/images/logo-colorida.png'
   <!-- Mobile Menu Overlay -->
   <div
     id="mobile-menu"
-    class="bg-grafite/95 fixed inset-0 z-40 flex translate-x-full flex-col items-center justify-center backdrop-blur-xl transition-transform duration-500 ease-in-out md:hidden">
+    class="fixed inset-0 z-40 flex translate-x-full flex-col items-center justify-center bg-grafite/95 backdrop-blur-xl transition-transform duration-500 ease-in-out md:hidden">
     <nav class="flex flex-col items-center space-y-8">
       {
         NAV_LINKS.map((link, index) => (
           <a
             href={link.href}
-            class="nav-item-mobile font-display hover:text-amarelo translate-y-4 transform text-3xl text-white opacity-0 transition-all duration-300"
+            class="nav-item-mobile translate-y-4 transform font-display text-3xl text-white opacity-0 transition-all duration-300 hover:text-amarelo"
             style={`transition-delay: ${index * 100}ms`}>
             {link.label}
           </a>
@@ -115,7 +115,7 @@ import logoColorida from '../assets/images/logo-colorida.png'
             href={SOCIAL_LINKS.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            class="hover:text-amarelo transform text-white/70 transition-colors hover:scale-110">
+            class="transform text-white/70 transition-colors hover:scale-110 hover:text-amarelo">
             <span class="sr-only">Instagram</span>
             <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path

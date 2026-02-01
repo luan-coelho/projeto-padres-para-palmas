@@ -34,47 +34,49 @@ const {
 } = Astro.props
 
 const galleryItems = [
-    {
-        image: foto1,
-        alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-        description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-        location: 'Lagoa do Tocantins'
-    },
-    {
-        image: foto2,
-        alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-        description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-        location: 'Lagoa do Tocantins'
-    },
-    {
-        image: foto3,
-        alt: 'Formação Humana',
-        description:
-            'Oportunidades de aprendizado e crescimento pessoal, preparando o terreno para uma vocação sólida.',
-        location: 'Auditório Paroquial'
-    },
-    {
-        image: foto4,
-        alt: 'Serviço ao Próximo',
-        description: 'Ações concretas de caridade e missão, onde o chamado se manifesta no amor aos irmãos.',
-        location: 'Comunidade local'
-    },
-    {
-        image: foto5,
-        alt: 'Vida Sacramental',
-        description: 'A Eucaristia como fonte e ápice da vida cristã e do chamado sacerdotal.',
-        location: 'Catedral Divino Espírito Santo'
-    },
-    {
-        image: foto6,
-        alt: 'Acompanhamento',
-        description: 'Orientação espiritual e vocacional, luzes para os passos de quem deseja seguir a Cristo.',
-        location: 'Jardins do Seminário'
-    }
+  {
+    image: foto1,
+    alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+    description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+    location: 'Lagoa do Tocantins'
+  },
+  {
+    image: foto2,
+    alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+    description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+    location: 'Lagoa do Tocantins'
+  },
+  {
+    image: foto3,
+    alt: 'Formação Humana',
+    description:
+      'Oportunidades de aprendizado e crescimento pessoal, preparando o terreno para uma vocação sólida.',
+    location: 'Auditório Paroquial'
+  },
+  {
+    image: foto4,
+    alt: 'Serviço ao Próximo',
+    description:
+      'Ações concretas de caridade e missão, onde o chamado se manifesta no amor aos irmãos.',
+    location: 'Comunidade local'
+  },
+  {
+    image: foto5,
+    alt: 'Vida Sacramental',
+    description: 'A Eucaristia como fonte e ápice da vida cristã e do chamado sacerdotal.',
+    location: 'Catedral Divino Espírito Santo'
+  },
+  {
+    image: foto6,
+    alt: 'Acompanhamento',
+    description:
+      'Orientação espiritual e vocacional, luzes para os passos de quem deseja seguir a Cristo.',
+    location: 'Jardins do Seminário'
+  }
 ]
 ---
 
-<section id="sobre" class="bg-bg-azul relative overflow-hidden py-20 lg:py-28">
+<section id="sobre" class="relative overflow-hidden bg-bg-azul py-20 lg:py-28">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
       <!-- Image -->
@@ -88,21 +90,21 @@ const galleryItems = [
 
       <!-- Content -->
       <div>
-        <span class="text-verde mb-4 inline-block text-sm font-semibold tracking-wider uppercase">
+        <span class="mb-4 inline-block text-sm font-semibold tracking-wider text-verde uppercase">
           {sectionLabel}
         </span>
-        <h2 class="text-grafite mb-6 text-3xl leading-tight font-light sm:text-4xl">
+        <h2 class="mb-6 text-3xl leading-tight font-light text-grafite sm:text-4xl">
           {title}
           <span class="font-semibold">{titleHighlight}</span>
         </h2>
         {
           paragraphs.map(paragraph => (
-            <p class="text-grafite/80 mb-6 text-lg leading-relaxed">{paragraph}</p>
+            <p class="mb-6 text-lg leading-relaxed text-grafite/80">{paragraph}</p>
           ))
         }
         <a
           href={buttonLink}
-          class="bg-azul hover:bg-azul/90 inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white transition-all duration-300">
+          class="inline-flex items-center gap-2 rounded-full bg-azul px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-azul/90">
           {buttonText}
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -117,14 +119,16 @@ const galleryItems = [
     </div>
   </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-        <div class="text-center mb-16">
-            <span class="inline-block text-verde font-semibold text-sm uppercase tracking-wider mb-4">Galeria</span>
-            <h3 class="text-3xl font-light text-grafite">
-                Registros da <span class="font-semibold">Experiência Vocacional Missionária</span>
-            </h3>
-        </div>
-
-        <Gallery client:visible items={galleryItems} />
+  <div class="mx-auto mt-24 max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-16 text-center">
+      <span class="mb-4 inline-block text-sm font-semibold tracking-wider text-verde uppercase">
+        Galeria
+      </span>
+      <h3 class="text-3xl font-light text-grafite">
+        Registros da <span class="font-semibold">Experiência Vocacional Missionária</span>
+      </h3>
     </div>
+
+    <Gallery client:visible items={galleryItems} />
+  </div>
 </section>

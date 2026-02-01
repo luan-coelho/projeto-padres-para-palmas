@@ -2,10 +2,16 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+bun.lock
 
 # Build outputs
 dist
 .astro
+.vercel
 
 # Dependencies
 node_modules
+
+# Env
+.env
+.env.*

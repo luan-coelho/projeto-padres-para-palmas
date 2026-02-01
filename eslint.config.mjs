@@ -7,7 +7,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default [
   {
-    ignores: ['dist', 'node_modules', '.astro', '.env', '.env.*', 'public']
+    ignores: ['dist', 'node_modules', '.astro', '.vercel', '.env', '.env.*', 'public']
   },
 
   // TypeScript
