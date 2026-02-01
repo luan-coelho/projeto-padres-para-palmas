@@ -1,17 +1,13 @@
-# Lockfiles
-package-lock.json
-pnpm-lock.yaml
-yarn.lock
-bun.lock
-
-# Build outputs
 dist
-.astro
-.vercel
-
-# Dependencies
 node_modules
-
-# Env
+.vercel
+.git
+.vinxi
+_backup
+coverage
 .env
 .env.*
+public
+pnpm-lock.yaml
+bun.lockb
+package-lock.json
