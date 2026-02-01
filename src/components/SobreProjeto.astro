@@ -1,6 +1,14 @@
 ---
 import { Image } from 'astro:assets'
 import logoColorida from '../assets/images/logo-colorida-st.png'
+import { Gallery } from './Gallery'
+
+import foto1 from '../assets/images/galeria/foto1.jpeg'
+import foto2 from '../assets/images/galeria/foto2.jpeg'
+import foto3 from '../assets/images/galeria/foto3.jpeg'
+import foto4 from '../assets/images/galeria/foto4.jpeg'
+import foto5 from '../assets/images/galeria/foto5.jpeg'
+import foto6 from '../assets/images/galeria/foto6.jpeg'
 
 interface Props {
   sectionLabel?: string
@@ -24,6 +32,46 @@ const {
   buttonLink = '#pilares',
   image = logoColorida
 } = Astro.props
+
+const galleryItems = [
+    {
+        image: foto1,
+        alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+        description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+        location: 'Lagoa do Tocantins'
+    },
+    {
+        image: foto2,
+        alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+        description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
+        location: 'Lagoa do Tocantins'
+    },
+    {
+        image: foto3,
+        alt: 'Formação Humana',
+        description:
+            'Oportunidades de aprendizado e crescimento pessoal, preparando o terreno para uma vocação sólida.',
+        location: 'Auditório Paroquial'
+    },
+    {
+        image: foto4,
+        alt: 'Serviço ao Próximo',
+        description: 'Ações concretas de caridade e missão, onde o chamado se manifesta no amor aos irmãos.',
+        location: 'Comunidade local'
+    },
+    {
+        image: foto5,
+        alt: 'Vida Sacramental',
+        description: 'A Eucaristia como fonte e ápice da vida cristã e do chamado sacerdotal.',
+        location: 'Catedral Divino Espírito Santo'
+    },
+    {
+        image: foto6,
+        alt: 'Acompanhamento',
+        description: 'Orientação espiritual e vocacional, luzes para os passos de quem deseja seguir a Cristo.',
+        location: 'Jardins do Seminário'
+    }
+]
 ---
 
 <section id="sobre" class="bg-bg-azul relative overflow-hidden py-20 lg:py-28">
@@ -68,4 +116,15 @@ const {
       </div>
     </div>
   </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div class="text-center mb-16">
+            <span class="inline-block text-verde font-semibold text-sm uppercase tracking-wider mb-4">Galeria</span>
+            <h3 class="text-3xl font-light text-grafite">
+                Registros da <span class="font-semibold">Experiência Vocacional Missionária</span>
+            </h3>
+        </div>
+
+        <Gallery client:visible items={galleryItems} />
+    </div>
 </section>
