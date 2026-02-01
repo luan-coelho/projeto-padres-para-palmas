@@ -12,9 +12,9 @@ function Home() {
   return (
     <Layout>
       <Hero />
+      <SobreProjeto />
       <Apresentacao />
       <Pilares />
-      <SobreProjeto />
       <Contato />
     </Layout>
   )

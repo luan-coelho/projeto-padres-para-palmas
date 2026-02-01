@@ -220,31 +220,31 @@ export function PilaresList() {
               onClick={() => setSelectedPilar(null)}
               aria-hidden="true"
             />
-            <div className="animate-in zoom-in-95 fade-in relative z-50 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl duration-200">
-              <div className="p-6 sm:p-8">
-                <div className="mb-6 flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={cn(
-                        'flex h-12 w-12 items-center justify-center rounded-xl',
-                        colorClasses[selectedPilar.color].bg,
-                        colorClasses[selectedPilar.color].text
-                      )}>
-                      {(() => {
-                        const Icon = icons[selectedPilar.icon]
-                        return <Icon className="h-6 w-6" />
-                      })()}
-                    </div>
-                    <h3 className="text-grafite pr-8 text-xl font-semibold sm:text-2xl">
-                      {selectedPilar.fullTitle}
-                    </h3>
+            <div className="animate-in zoom-in-95 fade-in relative z-50 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl duration-200">
+              <div className="flex items-start justify-between p-6 pb-0 sm:p-8">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={cn(
+                      'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
+                      colorClasses[selectedPilar.color].bg,
+                      colorClasses[selectedPilar.color].text
+                    )}>
+                    {(() => {
+                      const Icon = icons[selectedPilar.icon]
+                      return <Icon className="h-6 w-6" />
+                    })()}
                   </div>
-                  <button
-                    onClick={() => setSelectedPilar(null)}
-                    className="absolute top-4 right-4 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
-                    <X className="h-5 w-5" />
-                  </button>
+                  <h3 className="text-grafite pr-8 text-xl font-semibold sm:text-2xl">
+                    {selectedPilar.fullTitle}
+                  </h3>
                 </div>
+                <button
+                  onClick={() => setSelectedPilar(null)}
+                  className="absolute top-4 right-4 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="overflow-y-auto p-6 pt-6 sm:p-8">
                 <div className="prose prose-blue max-w-none">
                   <p className="text-lg leading-relaxed whitespace-pre-wrap text-gray-600">
                     {selectedPilar.fullContent}
