@@ -3,7 +3,7 @@ import { tv } from 'tailwind-variants'
 import heroBgDesktop from '../assets/images/barco-com-jesus-desktop.png'
 import heroBgMobile from '../assets/images/barco-com-jesus-mobile-v6.png'
 import logoBrancaSt from '../assets/images/logo-branca-st.png'
-import type { VariantProps } from 'tailwind-variants';
+import type { VariantProps } from 'tailwind-variants'
 import type { ComponentProps } from 'react'
 
 export const heroVariants = tv({

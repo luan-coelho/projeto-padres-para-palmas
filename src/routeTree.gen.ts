@@ -16,17 +16,17 @@ import { Route as IndexRouteImport } from './routes/index'
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 const LinktreeRoute = LinktreeRouteImport.update({
   id: '/linktree',
   path: '/linktree',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -88,7 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LinktreeRoute: LinktreeRoute,
-  SobreRoute: SobreRoute,
+  SobreRoute: SobreRoute
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

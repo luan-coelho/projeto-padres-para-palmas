@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '../lib/utils'
-import type { ComponentProps } from 'react';
+import type { ComponentProps } from 'react'
 
 interface Pilar {
   icon: string

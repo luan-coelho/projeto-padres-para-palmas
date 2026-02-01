@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router'
 import { Instagram, Menu, X } from 'lucide-react'
-import type { ComponentProps } from 'react'
 import { useEffect, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import logoColorida from '../assets/images/logo-colorida.png'
 import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
+import type { ComponentProps } from 'react'
 
 export interface HeaderProps extends ComponentProps<'header'> {}
 
