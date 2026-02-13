@@ -1,9 +1,11 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import type { QueryClient } from '@tanstack/react-query'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts'
 import logoColorida from '../assets/images/logo-colorida.png'
 import appCss from '../styles.css?url'
+
+import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -178,6 +180,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body className="font-body text-grafite bg-white antialiased">
         {children}
         <Scripts />
+        <SpeedInsights />
       </body>
     </html>
   )
