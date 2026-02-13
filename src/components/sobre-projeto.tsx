@@ -23,42 +23,39 @@ export interface SobreProjetoProps extends ComponentProps<'section'> {
 const galleryItems = [
   {
     image: foto1,
-    alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-    description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-    location: 'Lagoa do Tocantins'
+    alt: 'Quilombo Rio Preto',
+    description: 'Comunidade Imaculada Conceição',
+    location: 'Lagoa do Tocantins - TO'
   },
   {
     image: foto2,
-    alt: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-    description: 'Quilombo Rio Preto - Comunidade Imaculada Conceição',
-    location: 'Lagoa do Tocantins'
+    alt: 'Quilombo Rio Preto',
+    description: 'Comunidade Imaculada Conceição',
+    location: 'Lagoa do Tocantins - TO'
   },
   {
     image: foto3,
-    alt: 'Formação Humana',
-    description:
-      'Oportunidades de aprendizado e crescimento pessoal, preparando o terreno para uma vocação sólida.',
-    location: 'Auditório Paroquial'
+    alt: 'Missão',
+    description: 'Território da Paróquia Jesus de Nazaré',
+    location: 'Palmas - TO'
   },
   {
     image: foto4,
-    alt: 'Serviço ao Próximo',
-    description:
-      'Ações concretas de caridade e missão, onde o chamado se manifesta no amor aos irmãos.',
-    location: 'Comunidade local'
+    alt: 'Santa Missa',
+    description: 'Paróquia Santo Expedito',
+    location: 'Palmas - TO'
   },
   {
     image: foto5,
-    alt: 'Vida Sacramental',
-    description: 'A Eucaristia como fonte e ápice da vida cristã e do chamado sacerdotal.',
-    location: 'Catedral Divino Espírito Santo'
+    alt: 'Visita aos enfermos',
+    description: 'UPA SUL',
+    location: 'Palmas - TO'
   },
   {
     image: foto6,
-    alt: 'Acompanhamento',
-    description:
-      'Orientação espiritual e vocacional, luzes para os passos de quem deseja seguir a Cristo.',
-    location: 'Jardins do Seminário'
+    alt: 'Partilha da Palavra de Deus',
+    description: 'Comunidade São Matias',
+    location: 'Palmas - TO'
   }
 ]
 
