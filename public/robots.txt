@@ -1,3 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
+# robots.txt para Projeto Padres para a Igreja de Palmas
+# Referência: https://www.robotstxt.org/
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap XML
+Sitemap: https://padresparapalmas.org.br/sitemap.xml

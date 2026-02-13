@@ -1,7 +1,14 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Globe, HardDrive, Instagram } from 'lucide-react'
 import logoColoridaSt from '../assets/images/logo-colorida-st.png'
-import { SITE_TITLE } from '../consts'
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts'
+
+const SITE_URL = 'https://padresparapalmas.org.br'
+const PAGE_PATH = '/linktree'
+const PAGE_URL = `${SITE_URL}${PAGE_PATH}`
+const PAGE_TITLE = `Links Oficiais | ${SITE_TITLE}`
+const PAGE_DESCRIPTION =
+  'Acesse os links oficiais do Projeto Padres para a Igreja de Palmas: Instagram, arquivos e site oficial.'
 
 const links = [
   {
@@ -24,17 +31,86 @@ const links = [
   }
 ]
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Início',
+      item: SITE_URL
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Links Oficiais',
+      item: PAGE_URL
+    }
+  ]
+}
+
 export const Route = createFileRoute('/linktree')({
   head: () => ({
     meta: [
       {
-        title: `Links | ${SITE_TITLE}`
+        title: PAGE_TITLE
+      },
+      {
+        name: 'description',
+        content: PAGE_DESCRIPTION
+      },
+      {
+        name: 'robots',
+        content: 'index,follow'
+      },
+      {
+        property: 'og:type',
+        content: 'website'
+      },
+      {
+        property: 'og:site_name',
+        content: SITE_TITLE
+      },
+      {
+        property: 'og:title',
+        content: PAGE_TITLE
+      },
+      {
+        property: 'og:description',
+        content: PAGE_DESCRIPTION
+      },
+      {
+        property: 'og:url',
+        content: PAGE_URL
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image'
+      },
+      {
+        name: 'twitter:title',
+        content: PAGE_TITLE
+      },
+      {
+        name: 'twitter:description',
+        content: PAGE_DESCRIPTION
       }
     ],
     links: [
       {
+        rel: 'canonical',
+        href: PAGE_URL
+      },
+      {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
+      }
+    ],
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(breadcrumbJsonLd)
       }
     ]
   }),
@@ -43,31 +119,30 @@ export const Route = createFileRoute('/linktree')({
 
 export function LinkTree() {
   return (
-    <div
+    <main
       data-slot="link-tree"
       className="m-0 flex min-h-screen items-center justify-center bg-[#9c5a41] p-4 font-['Poppins',sans-serif]">
-      <div className="w-full max-w-[480px]">
-        <div className="px-6 py-10 text-center">
-          {/* Profile Section */}
+      <div className="w-full max-w-120">
+        <section className="px-6 py-10 text-center" aria-label="Links oficiais do projeto">
           <div className="mb-10">
-            <div className="mx-auto mb-6 flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
+            <div className="mx-auto mb-6 flex h-30 w-30 items-center justify-center overflow-hidden rounded-full bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
               <img
                 src={logoColoridaSt}
-                alt="Logo Projeto Padres"
+                alt="Logo Projeto Padres para a Igreja de Palmas"
                 className="h-full w-full object-contain"
+                loading="eager"
+                decoding="async"
               />
             </div>
             <h1 className="mb-3 text-[1.4rem] leading-tight font-bold tracking-wide text-[#ffcc29]">
               Projeto Padres para a Igreja de Palmas
             </h1>
-            <p className="mx-auto max-w-[380px] text-[0.9rem] leading-relaxed font-normal text-white opacity-95">
-              O projeto Padres para a Igreja de Palmas é uma iniciativa vocacional que tem como
-              objetivo promover a cultura vocacional na Arquidiocese de Palmas.
+            <p className="mx-auto max-w-95 text-[0.9rem] leading-relaxed font-normal text-white opacity-95">
+              {SITE_DESCRIPTION}
             </p>
           </div>
 
-          {/* Links List */}
-          <div className="mb-10 flex flex-col gap-4">
+          <nav className="mb-10 flex flex-col gap-4" aria-label="Lista de links">
             {links.map((link, index) => {
               const Icon = link.icon
               const isExternal = link.isExternal
@@ -82,7 +157,8 @@ export function LinkTree() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={linkClass}>
+                    className={linkClass}
+                    aria-label={`${link.text} (abre em nova aba)`}>
                     <Icon className="size-5 transition-transform duration-300 group-hover:scale-110" />
                     <span>{link.text}</span>
                   </a>
@@ -90,20 +166,15 @@ export function LinkTree() {
               }
 
               return (
-                <Link key={index} to={link.href} className={linkClass}>
+                <Link key={index} to={link.href} className={linkClass} aria-label={link.text}>
                   <Icon className="size-5 transition-transform duration-300 group-hover:scale-110" />
                   <span>{link.text}</span>
                 </Link>
               )
             })}
-          </div>
-
-          {/* Footer Social (Optional - matched Astro content which didn't strictly have footer buttons but had styles for them) */}
-          <div className="flex justify-center gap-5">
-            {/* Add social icons here if needed, based on styles present in original file */}
-          </div>
-        </div>
+          </nav>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }
