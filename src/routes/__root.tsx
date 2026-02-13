@@ -1,4 +1,5 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts'
@@ -180,6 +181,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body className="font-body text-grafite bg-white antialiased">
         {children}
         <Scripts />
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>
