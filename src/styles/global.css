@@ -18,6 +18,12 @@
   --color-bg-verde: #f0f9f5;
   --color-bg-marrom: #faf7f3;
 
+  /* Linktree Palette */
+  --color-linktree-bg: #9c5a41;
+  --color-linktree-title: #ffcc29;
+  --color-linktree-accent: #27adb8;
+  --color-linktree-hover: #e5f6f7;
+
   /* Custom Fonts */
   --font-display: 'Cinzel', serif;
   --font-body: 'Lato', sans-serif;

@@ -153,7 +153,7 @@ const pilaresJsonData = pilaresData.map((p) => ({
 </div>
 
 <!-- Modal -->
-<div id="pilar-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6">
+<div id="pilar-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="pilar-modal-title">
   <div
     id="pilar-modal-backdrop"
     class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -234,6 +234,7 @@ const pilaresJsonData = pilaresData.map((p) => ({
   }
 
   const modal = document.getElementById('pilar-modal')!
+  const modalContent = document.getElementById('pilar-modal-content')!
   const backdrop = document.getElementById('pilar-modal-backdrop')!
   const modalTitle = document.getElementById('pilar-modal-title')!
   const modalText = document.getElementById('pilar-modal-text')!
@@ -241,10 +242,13 @@ const pilaresJsonData = pilaresData.map((p) => ({
   const closeBtn = document.getElementById('pilar-modal-close')!
   const closeBtnFooter = document.getElementById('pilar-modal-close-btn')!
   const cards = document.querySelectorAll('.pilar-card')
+  let lastFocusedElement: HTMLElement | null = null
 
   function openModal(index: number) {
     const pilar = pilaresData[index]
     const colors = colorMap[pilar.color]
+
+    lastFocusedElement = document.activeElement as HTMLElement
 
     modalTitle.textContent = pilar.fullTitle
     modalText.textContent = pilar.fullContent
@@ -257,7 +261,6 @@ const pilaresJsonData = pilaresData.map((p) => ({
     const iconClone = cardIcon.cloneNode(true) as SVGElement
     iconClone.classList.remove('h-7', 'w-7', 'group-hover:text-white')
     iconClone.classList.add('h-6', 'w-6')
-    // Reset color classes
     iconClone.className = `h-6 w-6 ${colors.text}`
     iconClone.setAttribute('fill', 'none')
     iconClone.setAttribute('stroke', 'currentColor')
@@ -267,12 +270,14 @@ const pilaresJsonData = pilaresData.map((p) => ({
     modal.classList.remove('hidden')
     modal.classList.add('flex')
     document.body.style.overflow = 'hidden'
+    closeBtn.focus()
   }
 
   function closeModal() {
     modal.classList.add('hidden')
     modal.classList.remove('flex')
     document.body.style.overflow = ''
+    lastFocusedElement?.focus()
   }
 
   // Card clicks
@@ -288,9 +293,27 @@ const pilaresJsonData = pilaresData.map((p) => ({
   closeBtnFooter.addEventListener('click', closeModal)
   backdrop.addEventListener('click', closeModal)
 
-  // Keyboard
+  // Keyboard: Escape + focus trap
   document.addEventListener('keydown', (e) => {
     if (modal.classList.contains('hidden')) return
     if (e.key === 'Escape') closeModal()
+    if (e.key === 'Tab') {
+      const focusable = modalContent.querySelectorAll<HTMLElement>(
+        'button, [href], [tabindex]:not([tabindex="-1"])'
+      )
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
   })
 </script>

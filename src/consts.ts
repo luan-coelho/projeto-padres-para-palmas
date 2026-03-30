@@ -1,6 +1,4 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
+export const SITE_URL = 'https://www.padresparapalmas.com.br'
 export const SITE_TITLE = 'Projeto Padres para a Igreja de Palmas'
 export const SITE_DESCRIPTION =
   'Projeto Padres para a Igreja de Palmas - Cultivando vocações para o sacerdócio na Arquidiocese de Palmas-TO'

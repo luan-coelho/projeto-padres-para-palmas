@@ -17,7 +17,7 @@ const { items } = Astro.props
 // Generate optimized full-res images for lightbox
 const processedItems = await Promise.all(
   items.map(async (item) => {
-    const fullRes = await getImage({ src: item.image, width: 1200, format: 'webp' })
+    const fullRes = await getImage({ src: item.image, width: 1200, format: 'webp', quality: 80 })
     return {
       fullSrc: fullRes.src,
       alt: item.alt,
@@ -232,6 +232,7 @@ const processedItems = await Promise.all(
   }> = JSON.parse(document.getElementById('gallery-data')!.textContent!)
 
   const lightbox = document.getElementById('lightbox')!
+  const lightboxContent = document.getElementById('lightbox-content')!
   const lightboxOverlay = document.getElementById('lightbox-overlay')!
   const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement
   const lightboxTitle = document.getElementById('lightbox-title')!
@@ -244,6 +245,7 @@ const processedItems = await Promise.all(
   const lightboxThumbs = document.querySelectorAll('.lightbox-thumb')
 
   let currentIndex = 0
+  let lastFocusedElement: HTMLElement | null = null
 
   function showImage(index: number) {
     currentIndex = index
@@ -273,14 +275,17 @@ const processedItems = await Promise.all(
   }
 
   function openLightbox(index: number) {
+    lastFocusedElement = document.activeElement as HTMLElement
     showImage(index)
     lightbox.classList.remove('hidden')
     document.body.style.overflow = 'hidden'
+    lightboxClose.focus()
   }
 
   function closeLightbox() {
     lightbox.classList.add('hidden')
     document.body.style.overflow = ''
+    lastFocusedElement?.focus()
   }
 
   function nextImage() {
@@ -319,12 +324,30 @@ const processedItems = await Promise.all(
     nextImage()
   })
 
-  // Keyboard navigation
+  // Keyboard navigation + focus trap
   document.addEventListener('keydown', (e) => {
     if (lightbox.classList.contains('hidden')) return
     if (e.key === 'Escape') closeLightbox()
     else if (e.key === 'ArrowRight') nextImage()
     else if (e.key === 'ArrowLeft') prevImage()
+    else if (e.key === 'Tab') {
+      const focusable = lightboxContent.querySelectorAll<HTMLElement>(
+        'button, [href], [tabindex]:not([tabindex="-1"])'
+      )
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
   })
 
   // Touch swipe support
