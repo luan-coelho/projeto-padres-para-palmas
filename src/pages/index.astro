@@ -1,0 +1,38 @@
+---
+import MainLayout from '../layouts/MainLayout.astro'
+import Hero from '../components/Hero.astro'
+import SobreProjeto from '../components/SobreProjeto.astro'
+import Apresentacao from '../components/Apresentacao.astro'
+import Pilares from '../components/Pilares.astro'
+import Contato from '../components/Contato.astro'
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'
+
+const SITE_URL = 'https://www.padresparapalmas.com.br'
+
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  url: SITE_URL,
+  inLanguage: 'pt-BR',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: SITE_TITLE,
+    url: SITE_URL
+  }
+}
+---
+
+<MainLayout
+  title={SITE_TITLE}
+  description={SITE_DESCRIPTION}
+  canonicalURL={SITE_URL}
+  jsonLd={[homeJsonLd]}
+>
+  <Hero />
+  <SobreProjeto />
+  <Apresentacao />
+  <Pilares />
+  <Contato />
+</MainLayout>

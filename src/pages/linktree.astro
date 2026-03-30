@@ -1,0 +1,165 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import logoColoridaSt from '../assets/images/logo-colorida-st.png'
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'
+
+const SITE_URL = 'https://www.padresparapalmas.com.br'
+const PAGE_PATH = '/linktree'
+const PAGE_URL = `${SITE_URL}${PAGE_PATH}`
+const PAGE_TITLE = `Links Oficiais | ${SITE_TITLE}`
+const PAGE_DESCRIPTION =
+  'Acesse os links oficiais do Projeto Padres para a Igreja de Palmas: Instagram, arquivos e site oficial.'
+
+const links = [
+  {
+    text: 'Acesse nosso Instagram',
+    href: 'https://instagram.com/padresparapalmas',
+    icon: 'instagram',
+    isExternal: true
+  },
+  {
+    text: 'Acesse nossos arquivos',
+    href: 'https://drive.google.com/drive/folders/1QvgaL7HDwq-uUq8H3BmJjeSxKxqV1SZJ',
+    icon: 'harddrive',
+    isExternal: true
+  },
+  {
+    text: 'Site Oficial do Projeto',
+    href: '/',
+    icon: 'globe',
+    isExternal: false
+  }
+]
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Início',
+      item: SITE_URL
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Links Oficiais',
+      item: PAGE_URL
+    }
+  ]
+}
+
+const iconSvgs: Record<string, string> = {
+  instagram:
+    '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
+  harddrive:
+    '<line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/>',
+  globe:
+    '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>'
+}
+
+const linkClass =
+  'group flex items-center justify-center gap-3 w-full p-4 bg-white border-none rounded-[50px] text-[#27adb8] text-base font-medium no-underline cursor-pointer transition-all duration-250 text-center shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:bg-[#e5f6f7] hover:-translate-y-[2px] hover:shadow-[0_6px_20px_rgba(39,173,184,0.2)] active:translate-y-0'
+---
+
+<BaseLayout
+  title={PAGE_TITLE}
+  description={PAGE_DESCRIPTION}
+  canonicalURL={PAGE_URL}
+  jsonLd={[breadcrumbJsonLd]}
+>
+  <Fragment slot="head">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    />
+  </Fragment>
+
+  <main
+    data-slot="link-tree"
+    class="m-0 flex min-h-screen items-center justify-center bg-[#9c5a41] p-4 font-['Poppins',sans-serif]"
+  >
+    <div class="w-full max-w-120">
+      <section class="px-6 py-10 text-center" aria-label="Links oficiais do projeto">
+        <div class="mb-10">
+          <div
+            class="mx-auto mb-6 flex h-30 w-30 items-center justify-center overflow-hidden rounded-full bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.15)]"
+          >
+            <Image
+              src={logoColoridaSt}
+              alt="Logo Projeto Padres para a Igreja de Palmas"
+              class="h-full w-full object-contain"
+              loading="eager"
+              width={120}
+              height={120}
+            />
+          </div>
+          <h1
+            class="mb-3 text-[1.4rem] leading-tight font-bold tracking-wide text-[#ffcc29]"
+          >
+            Projeto Padres para a Igreja de Palmas
+          </h1>
+          <p class="mx-auto max-w-95 text-[0.9rem] leading-relaxed font-normal text-white opacity-95">
+            {SITE_DESCRIPTION}
+          </p>
+        </div>
+
+        <nav class="mb-10 flex flex-col gap-4" aria-label="Lista de links">
+          {
+            links.map((link) => {
+              const svgContent = iconSvgs[link.icon]
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={linkClass}
+                    aria-label={`${link.text} (abre em nova aba)`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="size-5 transition-transform duration-300 group-hover:scale-110"
+                      set:html={svgContent}
+                    />
+                    <span>{link.text}</span>
+                  </a>
+                )
+              }
+
+              return (
+                <a href={link.href} class={linkClass} aria-label={link.text}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="size-5 transition-transform duration-300 group-hover:scale-110"
+                    set:html={svgContent}
+                  />
+                  <span>{link.text}</span>
+                </a>
+              )
+            })
+          }
+        </nav>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

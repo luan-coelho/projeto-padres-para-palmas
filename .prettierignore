@@ -1,13 +1,10 @@
 dist
 node_modules
 .vercel
+.astro
 .git
-.vinxi
-_backup
 coverage
 .env
 .env.*
 public
-pnpm-lock.yaml
-bun.lockb
 package-lock.json

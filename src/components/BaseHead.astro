@@ -1,0 +1,87 @@
+---
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts'
+import logoColorida from '../assets/images/logo-colorida.png'
+
+interface Props {
+  title: string
+  description: string
+  canonicalURL?: string
+  ogImage?: string
+  jsonLd?: object[]
+}
+
+const SITE_URL = 'https://www.padresparapalmas.com.br'
+const {
+  title,
+  description,
+  canonicalURL = SITE_URL,
+  ogImage = logoColorida.src,
+  jsonLd = []
+} = Astro.props
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_TITLE,
+  url: SITE_URL,
+  logo: new URL(ogImage, SITE_URL).toString(),
+  sameAs: ['https://www.instagram.com/padresparapalmas']
+}
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_TITLE,
+  url: SITE_URL,
+  inLanguage: 'pt-BR',
+  description: SITE_DESCRIPTION,
+  publisher: {
+    '@type': 'Organization',
+    name: SITE_TITLE
+  }
+}
+
+const allJsonLd = [organizationJsonLd, websiteJsonLd, ...jsonLd]
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta
+  name="robots"
+  content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
+<meta
+  name="googlebot"
+  content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
+<meta name="theme-color" content="#9c5a41" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(ogImage, SITE_URL).toString()} />
+<meta property="og:image:alt" content={`${SITE_TITLE} - identidade visual`} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(ogImage, SITE_URL).toString()} />
+
+<!-- Links -->
+<link rel="canonical" href={canonicalURL} />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.json" />
+
+<!-- JSON-LD -->
+{allJsonLd.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}

@@ -1,0 +1,37 @@
+---
+import BaseHead from '../components/BaseHead.astro'
+import { ClientRouter } from 'astro:transitions'
+import Analytics from '@vercel/analytics/astro'
+import SpeedInsights from '@vercel/speed-insights/astro'
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description: string
+  canonicalURL?: string
+  ogImage?: string
+  jsonLd?: object[]
+}
+
+const { title, description, canonicalURL, ogImage, jsonLd } = Astro.props
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      canonicalURL={canonicalURL}
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+    />
+    <ClientRouter />
+    <slot name="head" />
+  </head>
+  <body class="font-body text-grafite bg-white antialiased">
+    <slot />
+    <Analytics />
+    <SpeedInsights />
+  </body>
+</html>

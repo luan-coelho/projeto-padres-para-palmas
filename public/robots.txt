@@ -5,4 +5,4 @@ User-agent: *
 Allow: /
 
 # Sitemap XML
-Sitemap: https://padresparapalmas.org.br/sitemap.xml
+Sitemap: https://www.padresparapalmas.com.br/sitemap-index.xml
