@@ -1,5 +1,11 @@
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+/* Self-hosted fonts (Fontsource) */
+@import '@fontsource/cinzel/latin-400.css';
+@import '@fontsource/cinzel/latin-500.css';
+@import '@fontsource/cinzel/latin-600.css';
+@import '@fontsource/cinzel/latin-700.css';
+@import '@fontsource/lato/latin-300.css';
+@import '@fontsource/lato/latin-400.css';
+@import '@fontsource/lato/latin-700.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
 

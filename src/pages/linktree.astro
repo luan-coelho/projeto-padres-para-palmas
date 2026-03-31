@@ -1,5 +1,9 @@
 ---
 import { Image } from 'astro:assets'
+import '@fontsource/poppins/latin-400.css'
+import '@fontsource/poppins/latin-500.css'
+import '@fontsource/poppins/latin-600.css'
+import '@fontsource/poppins/latin-700.css'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import logoColoridaSt from '../assets/images/logo-colorida-st.png'
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '../consts'
@@ -68,12 +72,6 @@ const linkClass =
   canonicalURL={PAGE_URL}
   jsonLd={[breadcrumbJsonLd]}
 >
-  <Fragment slot="head">
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-    />
-  </Fragment>
 
   <main
     data-slot="link-tree"
