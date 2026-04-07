@@ -4,7 +4,7 @@ import { db } from '@/db'
 import { allowedEmails } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
-const PRERENDERED_ROUTES = ['/linktree']
+const PRERENDERED_ROUTES = ['/linktree', '/404']
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Skip auth for prerendered static pages
