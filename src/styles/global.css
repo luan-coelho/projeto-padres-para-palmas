@@ -155,3 +155,69 @@ h6 {
 .prose li {
   margin-bottom: 0.5em;
 }
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.prose mark {
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.prose sup {
+  vertical-align: super;
+  font-size: 0.75em;
+}
+
+.prose sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+}
+
+.prose s {
+  text-decoration: line-through;
+}
+
+.prose hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 2em 0;
+}
+
+/* YouTube embeds */
+.prose div[data-youtube-video],
+.prose .youtube-embed {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  margin: 2em 0;
+  border-radius: 12px;
+}
+
+.prose div[data-youtube-video] iframe,
+.prose .youtube-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.prose iframe {
+  max-width: 100%;
+  margin: 2em 0;
+  border-radius: 12px;
+}

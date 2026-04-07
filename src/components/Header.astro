@@ -2,11 +2,17 @@
 import { Image } from 'astro:assets'
 import logoColorida from '../assets/images/logo-colorida.png'
 import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
+
+const isHomePage = Astro.url.pathname === '/'
 ---
 
 <header
   id="header"
-  class="fixed top-0 right-0 left-0 z-50 bg-transparent transition-all duration-300"
+  class:list={[
+    'fixed top-0 right-0 left-0 z-50 transition-all duration-300',
+    isHomePage ? 'bg-transparent' : 'bg-white shadow-md',
+  ]}
+  data-is-home={String(isHomePage)}
 >
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-20 items-center justify-between">
@@ -15,14 +21,20 @@ import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
         <Image
           src={logoColorida}
           alt="Projeto Padres"
-          class="h-12 w-auto opacity-0 transition-opacity duration-300"
+          class:list={[
+            'h-12 w-auto transition-opacity duration-300',
+            isHomePage ? 'opacity-0' : 'opacity-100',
+          ]}
           id="header-logo"
           loading="eager"
           width={48}
         />
         <div
           id="header-title"
-          class="text-grafite origin-left scale-90 leading-tight opacity-0 transition-all duration-300"
+          class:list={[
+            'text-grafite origin-left leading-tight transition-all duration-300',
+            isHomePage ? 'scale-90 opacity-0' : 'scale-100 opacity-100',
+          ]}
         >
           <span class="font-display block text-xs font-light sm:text-sm">
             Projeto Padres para a
@@ -39,7 +51,10 @@ import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
           NAV_LINKS.map((link) => (
             <a
               href={link.href}
-              class="nav-link font-medium text-white transition-colors hover:text-amarelo"
+              class:list={[
+                'nav-link font-medium transition-colors hover:text-amarelo',
+                isHomePage ? 'text-white' : 'text-grafite',
+              ]}
             >
               {link.label}
             </a>
@@ -50,7 +65,10 @@ import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-btn"
-        class="relative z-50 p-2 text-white transition-colors focus:outline-none md:hidden"
+        class:list={[
+          'relative z-50 p-2 transition-colors focus:outline-none md:hidden',
+          isHomePage ? 'text-white' : 'text-grafite',
+        ]}
         aria-label="Abrir menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -154,90 +172,95 @@ import { NAV_LINKS, SOCIAL_LINKS } from '../consts'
 </header>
 
 <script>
-  const header = document.getElementById('header')!
-  const menuBtn = document.getElementById('mobile-menu-btn')!
-  const mobileMenu = document.getElementById('mobile-menu')!
-  const headerLogo = document.getElementById('header-logo')!
-  const headerTitle = document.getElementById('header-title')!
-  const menuIcon = document.getElementById('menu-icon')!
-  const closeIcon = document.getElementById('close-icon')!
-  const navLinks = document.querySelectorAll('.nav-link')
-  const mobileNavItems = document.querySelectorAll('.nav-item-mobile')
-  let isMenuOpen = false
+  function initHeader() {
+    const header = document.getElementById('header')!
+    const menuBtn = document.getElementById('mobile-menu-btn')!
+    const mobileMenu = document.getElementById('mobile-menu')!
+    const headerLogo = document.getElementById('header-logo')!
+    const headerTitle = document.getElementById('header-title')!
+    const menuIcon = document.getElementById('menu-icon')!
+    const closeIcon = document.getElementById('close-icon')!
+    const navLinks = document.querySelectorAll('.nav-link')
+    const mobileNavItems = document.querySelectorAll('.nav-item-mobile')
+    const isHome = header.dataset.isHome === 'true'
+    let isMenuOpen = false
 
-  function handleScroll() {
-    const scrolled = window.scrollY > 100
-    header.classList.toggle('bg-white', scrolled)
-    header.classList.toggle('shadow-md', scrolled)
-    header.classList.toggle('bg-transparent', !scrolled)
-    headerLogo.classList.toggle('opacity-100', scrolled)
-    headerLogo.classList.toggle('opacity-0', !scrolled)
-    headerTitle.classList.toggle('opacity-100', scrolled)
-    headerTitle.classList.toggle('opacity-0', !scrolled)
-    headerTitle.classList.toggle('scale-100', scrolled)
-    headerTitle.classList.toggle('scale-90', !scrolled)
-    navLinks.forEach((link) => {
-      link.classList.toggle('text-grafite', scrolled)
-      link.classList.toggle('text-white', !scrolled)
-    })
-    if (!isMenuOpen) {
-      menuBtn.classList.toggle('text-grafite', scrolled)
-      menuBtn.classList.toggle('text-white', !scrolled)
-    }
-  }
-
-  function toggleMenu() {
-    isMenuOpen = !isMenuOpen
-    mobileMenu.classList.toggle('translate-x-full', !isMenuOpen)
-    mobileMenu.classList.toggle('translate-x-0', isMenuOpen)
-    document.body.style.overflow = isMenuOpen ? 'hidden' : ''
-    menuBtn.classList.toggle('text-white', isMenuOpen)
-    menuBtn.setAttribute('aria-expanded', String(isMenuOpen))
-    menuBtn.setAttribute('aria-label', isMenuOpen ? 'Fechar menu' : 'Abrir menu')
-
-    // Toggle icons
-    menuIcon.classList.toggle('scale-50', isMenuOpen)
-    menuIcon.classList.toggle('-rotate-90', isMenuOpen)
-    menuIcon.classList.toggle('opacity-0', isMenuOpen)
-    menuIcon.classList.toggle('scale-100', !isMenuOpen)
-    menuIcon.classList.toggle('rotate-0', !isMenuOpen)
-    menuIcon.classList.toggle('opacity-100', !isMenuOpen)
-
-    closeIcon.classList.toggle('scale-100', isMenuOpen)
-    closeIcon.classList.toggle('rotate-90', isMenuOpen)
-    closeIcon.classList.toggle('opacity-100', isMenuOpen)
-    closeIcon.classList.toggle('scale-50', !isMenuOpen)
-    closeIcon.classList.toggle('rotate-0', !isMenuOpen)
-    closeIcon.classList.toggle('opacity-0', !isMenuOpen)
-
-    // Animate mobile nav items
-    mobileNavItems.forEach((item, i) => {
-      if (isMenuOpen) {
-        setTimeout(() => {
-          item.classList.remove('translate-y-4', 'opacity-0')
-          item.classList.add('translate-y-0', 'opacity-100')
-        }, i * 100)
-      } else {
-        item.classList.add('translate-y-4', 'opacity-0')
-        item.classList.remove('translate-y-0', 'opacity-100')
+    function handleScroll() {
+      const scrolled = isHome ? window.scrollY > 100 : true
+      header.classList.toggle('bg-white', scrolled)
+      header.classList.toggle('shadow-md', scrolled)
+      header.classList.toggle('bg-transparent', !scrolled)
+      headerLogo.classList.toggle('opacity-100', scrolled)
+      headerLogo.classList.toggle('opacity-0', !scrolled)
+      headerTitle.classList.toggle('opacity-100', scrolled)
+      headerTitle.classList.toggle('opacity-0', !scrolled)
+      headerTitle.classList.toggle('scale-100', scrolled)
+      headerTitle.classList.toggle('scale-90', !scrolled)
+      navLinks.forEach((link) => {
+        link.classList.toggle('text-grafite', scrolled)
+        link.classList.toggle('text-white', !scrolled)
+      })
+      if (!isMenuOpen) {
+        menuBtn.classList.toggle('text-grafite', scrolled)
+        menuBtn.classList.toggle('text-white', !scrolled)
       }
+    }
+
+    function toggleMenu() {
+      isMenuOpen = !isMenuOpen
+      mobileMenu.classList.toggle('translate-x-full', !isMenuOpen)
+      mobileMenu.classList.toggle('translate-x-0', isMenuOpen)
+      document.body.style.overflow = isMenuOpen ? 'hidden' : ''
+      menuBtn.classList.toggle('text-white', isMenuOpen)
+      menuBtn.setAttribute('aria-expanded', String(isMenuOpen))
+      menuBtn.setAttribute('aria-label', isMenuOpen ? 'Fechar menu' : 'Abrir menu')
+
+      // Toggle icons
+      menuIcon.classList.toggle('scale-50', isMenuOpen)
+      menuIcon.classList.toggle('-rotate-90', isMenuOpen)
+      menuIcon.classList.toggle('opacity-0', isMenuOpen)
+      menuIcon.classList.toggle('scale-100', !isMenuOpen)
+      menuIcon.classList.toggle('rotate-0', !isMenuOpen)
+      menuIcon.classList.toggle('opacity-100', !isMenuOpen)
+
+      closeIcon.classList.toggle('scale-100', isMenuOpen)
+      closeIcon.classList.toggle('rotate-90', isMenuOpen)
+      closeIcon.classList.toggle('opacity-100', isMenuOpen)
+      closeIcon.classList.toggle('scale-50', !isMenuOpen)
+      closeIcon.classList.toggle('rotate-0', !isMenuOpen)
+      closeIcon.classList.toggle('opacity-0', !isMenuOpen)
+
+      // Animate mobile nav items
+      mobileNavItems.forEach((item, i) => {
+        if (isMenuOpen) {
+          setTimeout(() => {
+            item.classList.remove('translate-y-4', 'opacity-0')
+            item.classList.add('translate-y-0', 'opacity-100')
+          }, i * 100)
+        } else {
+          item.classList.add('translate-y-4', 'opacity-0')
+          item.classList.remove('translate-y-0', 'opacity-100')
+        }
+      })
+    }
+
+    // Close menu when clicking a nav link
+    mobileNavItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        if (isMenuOpen) toggleMenu()
+      })
     })
+
+    // Close menu on desktop resize
+    const mediaQuery = window.matchMedia('(min-width: 768px)')
+    mediaQuery.addEventListener('change', (e) => {
+      if (e.matches && isMenuOpen) toggleMenu()
+    })
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    menuBtn.addEventListener('click', toggleMenu)
+    handleScroll()
   }
 
-  // Close menu when clicking a nav link
-  mobileNavItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      if (isMenuOpen) toggleMenu()
-    })
-  })
-
-  // Close menu on desktop resize
-  const mediaQuery = window.matchMedia('(min-width: 768px)')
-  mediaQuery.addEventListener('change', (e) => {
-    if (e.matches && isMenuOpen) toggleMenu()
-  })
-
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  menuBtn.addEventListener('click', toggleMenu)
-  handleScroll()
+  document.addEventListener('astro:page-load', initHeader)
 </script>

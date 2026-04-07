@@ -1,0 +1,1057 @@
+---
+interface Props {
+  post?: {
+    id: number
+    title: string
+    slug: string
+    description: string
+    content: string
+    heroImage: string | null
+    published: boolean
+  }
+}
+
+const { post } = Astro.props
+const isEditing = !!post
+---
+
+<form
+  id="post-form"
+  data-post-id={post?.id}
+  data-mode={isEditing ? 'edit' : 'create'}
+  class="space-y-6"
+>
+  <!-- Titulo -->
+  <div>
+    <label for="title" class="mb-1 block text-sm font-medium">Titulo</label>
+    <input
+      type="text"
+      id="title"
+      name="title"
+      required
+      value={post?.title || ''}
+      class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1"
+      placeholder="Titulo da publicacao"
+    />
+  </div>
+
+  {
+    isEditing ? (
+      <div>
+        <label for="slug" class="mb-1 block text-sm font-medium">
+          Slug <span class="text-grafite/50 font-normal">(URL do post)</span>
+        </label>
+        <input type="text" id="slug" name="slug" required value={post.slug}
+          class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1" />
+      </div>
+    ) : (
+      <p id="slug-preview" class="text-grafite/50 -mt-2 text-sm">
+        URL: /blog/<span id="slug-value">...</span>
+      </p>
+    )
+  }
+
+  <div>
+    <label for="description" class="mb-1 block text-sm font-medium">Descricao</label>
+    <input
+      type="text"
+      id="description"
+      name="description"
+      required
+      value={post?.description || ''}
+      class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1"
+      placeholder="Breve descricao para listagem e SEO"
+    />
+  </div>
+
+  <!-- Editor WYSIWYG -->
+  <div>
+    <label class="mb-1 block text-sm font-medium">Conteudo</label>
+    <div id="editor-wrapper" class="editor-wrapper">
+      <div id="editor-toolbar" class="editor-toolbar">
+        <!-- Tipo de texto -->
+        <div class="toolbar-group">
+          <select id="heading-select" title="Tipo de texto" class="toolbar-select">
+            <option value="paragraph">Paragrafo</option>
+            <option value="2">Titulo</option>
+            <option value="3">Subtitulo</option>
+          </select>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Formatacao inline -->
+        <div class="toolbar-group">
+          <button type="button" data-action="bold" title="Negrito (Ctrl+B)" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+          </button>
+          <button type="button" data-action="italic" title="Italico (Ctrl+I)" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>
+          </button>
+          <button type="button" data-action="underline" title="Sublinhado (Ctrl+U)" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>
+          </button>
+          <button type="button" data-action="strike" title="Tachado" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/></svg>
+          </button>
+          <button type="button" data-action="superscript" title="Sobrescrito" class="toolbar-btn text-xs">
+            X<sup>2</sup>
+          </button>
+          <button type="button" data-action="subscript" title="Subscrito" class="toolbar-btn text-xs">
+            X<sub>2</sub>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Cores -->
+        <div class="toolbar-group">
+          <div class="color-dropdown-wrapper">
+            <button type="button" id="text-color-btn" title="Cor do texto" class="toolbar-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="m6 16 6-12 6 12"/><path d="M8 12h8"/></svg>
+              <span id="text-color-indicator" class="color-indicator" style="background:#1a1a1a"></span>
+            </button>
+            <div id="text-color-popover" class="color-popover hidden">
+              <button type="button" data-color="#1a1a1a" class="color-swatch" style="background:#1a1a1a" title="Padrao"></button>
+              <button type="button" data-color="#00aeef" class="color-swatch" style="background:#00aeef" title="Azul"></button>
+              <button type="button" data-color="#62a884" class="color-swatch" style="background:#62a884" title="Verde"></button>
+              <button type="button" data-color="#9a7b4f" class="color-swatch" style="background:#9a7b4f" title="Marrom"></button>
+              <button type="button" data-color="#dc2626" class="color-swatch" style="background:#dc2626" title="Vermelho"></button>
+              <button type="button" data-color="#6b7280" class="color-swatch" style="background:#6b7280" title="Cinza"></button>
+              <button type="button" data-color="" class="color-swatch color-swatch-remove" title="Remover cor">&#x2715;</button>
+            </div>
+          </div>
+          <div class="color-dropdown-wrapper">
+            <button type="button" id="highlight-btn" title="Marca-texto" class="toolbar-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+            </button>
+            <div id="highlight-popover" class="color-popover hidden">
+              <button type="button" data-highlight="#fef9c3" class="color-swatch" style="background:#fef9c3" title="Amarelo"></button>
+              <button type="button" data-highlight="#dcfce7" class="color-swatch" style="background:#dcfce7" title="Verde"></button>
+              <button type="button" data-highlight="#dbeafe" class="color-swatch" style="background:#dbeafe" title="Azul"></button>
+              <button type="button" data-highlight="#fce7f3" class="color-swatch" style="background:#fce7f3" title="Rosa"></button>
+              <button type="button" data-highlight="" class="color-swatch color-swatch-remove" title="Remover">&#x2715;</button>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Alinhamento -->
+        <div class="toolbar-group">
+          <button type="button" data-action="alignLeft" title="Alinhar a esquerda" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="15" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" data-action="alignCenter" title="Centralizar" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="6" x2="18" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" data-action="alignRight" title="Alinhar a direita" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="9" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" data-action="alignJustify" title="Justificar" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Blocos e listas -->
+        <div class="toolbar-group">
+          <button type="button" data-action="bulletList" title="Lista" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" data-action="orderedList" title="Lista numerada" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+          </button>
+          <button type="button" data-action="blockquote" title="Citacao" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z"/></svg>
+          </button>
+          <button type="button" data-action="codeBlock" title="Bloco de codigo" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+          <button type="button" data-action="horizontalRule" title="Linha horizontal" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" x2="21" y1="12" y2="12"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Insercao -->
+        <div class="toolbar-group">
+          <button type="button" data-action="link" title="Link (Ctrl+K)" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <button type="button" data-action="image" title="Imagem" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </button>
+          <button type="button" data-action="youtube" title="Video do YouTube" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Historico -->
+        <div class="toolbar-group">
+          <button type="button" data-action="undo" title="Desfazer (Ctrl+Z)" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          </button>
+          <button type="button" data-action="redo" title="Refazer" class="toolbar-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Preview -->
+        <div class="toolbar-group">
+          <button type="button" id="preview-toggle" title="Visualizar como no blog" class="toolbar-btn toolbar-btn-preview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="ml-1 text-xs">Preview</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor area -->
+      <div id="editor-content" class="editor-content"></div>
+
+      <!-- Image toolbar (appears when image is selected) -->
+      <div id="image-toolbar" class="image-toolbar hidden">
+        <span class="image-toolbar-label">Tamanho:</span>
+        <button type="button" data-img-width="160" class="image-toolbar-btn">Pequeno</button>
+        <button type="button" data-img-width="320" class="image-toolbar-btn">Medio</button>
+        <button type="button" data-img-width="480" class="image-toolbar-btn">Grande</button>
+        <button type="button" data-img-width="" class="image-toolbar-btn">Original</button>
+      </div>
+
+      <!-- Status bar -->
+      <div id="editor-status" class="editor-status">
+        <span id="word-count">0 palavras</span>
+        <span class="status-separator">&middot;</span>
+        <span id="char-count">0 caracteres</span>
+      </div>
+    </div>
+    <script is:inline define:vars={{ initialContent: post?.content || '' }}>
+      window.__editorInitialContent = initialContent
+    </script>
+
+    <!-- Preview panel (simula a pagina do blog) -->
+    <div id="preview-panel" class="preview-panel hidden">
+      <div class="preview-panel-header">
+        <span class="text-sm font-medium text-white">Pre-visualizacao do artigo</span>
+        <button type="button" id="preview-close" class="preview-close-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="preview-panel-body">
+        <article class="pt-8 pb-16">
+          <div class="prose">
+            <header class="mb-8">
+              <h1 id="preview-title" class="text-grafite mb-4 text-3xl font-bold sm:text-4xl"></h1>
+              <div class="text-grafite/60 flex flex-wrap items-center gap-4 text-sm">
+                <time id="preview-date"></time>
+                <span id="preview-author"></span>
+              </div>
+            </header>
+            <div id="preview-content"></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Autor -->
+  <div>
+    <label for="authorName" class="mb-1 block text-sm font-medium">
+      Autor <span class="text-grafite/50 font-normal">(opcional)</span>
+    </label>
+    <input type="text" id="authorName" name="authorName" value={post ? '' : 'Projeto Padres para a Igreja de Palmas'}
+      class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1"
+      placeholder="Nome do autor" />
+    <script is:inline define:vars={{ postAuthor: post?.authorName || '' }}>
+      if (postAuthor) document.getElementById('authorName').value = postAuthor
+    </script>
+  </div>
+
+  <!-- Imagem de capa -->
+  <div>
+    <label for="heroImage" class="mb-1 block text-sm font-medium">
+      Imagem de capa <span class="text-grafite/50 font-normal">(URL, opcional)</span>
+    </label>
+    <input type="url" id="heroImage" name="heroImage" value={post?.heroImage || ''}
+      class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1"
+      placeholder="https://exemplo.com/imagem.jpg" />
+  </div>
+
+  <div class="flex items-center gap-2">
+    <input type="checkbox" id="published" name="published" class="h-4 w-4 rounded" checked={post?.published || false} />
+    <label for="published" class="text-sm font-medium">
+      {isEditing ? 'Publicado' : 'Publicar imediatamente'}
+    </label>
+  </div>
+
+  <div class="flex items-center gap-4 border-t border-gray-200 pt-6">
+    <button type="submit" class="bg-verde hover:bg-verde/90 rounded-lg px-6 py-2.5 font-medium text-white transition-colors">
+      {isEditing ? 'Salvar alteracoes' : 'Salvar publicacao'}
+    </button>
+    <span id="form-status" class="text-sm"></span>
+    <span id="autosave-status" class="text-grafite/40 ml-auto text-xs"></span>
+  </div>
+</form>
+
+<!-- Dialogs (fora do form principal) -->
+<dialog id="dialog-link" class="editor-dialog">
+  <div class="dialog-header">
+    <h3 class="font-display text-base font-bold">Inserir link</h3>
+    <button type="button" class="dialog-close" aria-label="Fechar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <form method="dialog" class="dialog-body">
+    <div>
+      <label for="dialog-link-url" class="mb-1 block text-sm font-medium">URL</label>
+      <input type="url" id="dialog-link-url" required placeholder="https://exemplo.com" class="dialog-input" />
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="dialog-cancel">Cancelar</button>
+      <button type="submit" class="dialog-submit">Inserir</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dialog-image" class="editor-dialog">
+  <div class="dialog-header">
+    <h3 class="font-display text-base font-bold">Inserir imagem</h3>
+    <button type="button" class="dialog-close" aria-label="Fechar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <form method="dialog" class="dialog-body">
+    <div>
+      <label for="dialog-image-url" class="mb-1 block text-sm font-medium">URL da imagem</label>
+      <input type="url" id="dialog-image-url" required placeholder="https://exemplo.com/imagem.jpg" class="dialog-input" />
+    </div>
+    <div>
+      <label for="dialog-image-alt" class="mb-1 block text-sm font-medium">
+        Descricao <span class="text-grafite/50 font-normal">(opcional)</span>
+      </label>
+      <input type="text" id="dialog-image-alt" placeholder="Descricao da imagem" class="dialog-input" />
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="dialog-cancel">Cancelar</button>
+      <button type="submit" class="dialog-submit">Inserir</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dialog-youtube" class="editor-dialog">
+  <div class="dialog-header">
+    <h3 class="font-display text-base font-bold">Inserir video do YouTube</h3>
+    <button type="button" class="dialog-close" aria-label="Fechar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <form method="dialog" class="dialog-body">
+    <div>
+      <label for="dialog-youtube-url" class="mb-1 block text-sm font-medium">URL do video</label>
+      <input type="url" id="dialog-youtube-url" required placeholder="https://www.youtube.com/watch?v=..." class="dialog-input" />
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="dialog-cancel">Cancelar</button>
+      <button type="submit" class="dialog-submit">Inserir</button>
+    </div>
+  </form>
+</dialog>
+
+<style is:global>
+  .editor-wrapper {
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #fff;
+  }
+  .editor-wrapper:focus-within {
+    border-color: #00aeef;
+    box-shadow: 0 0 0 1px #00aeef;
+  }
+
+  .editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.5rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+  }
+  .toolbar-group { display: flex; align-items: center; gap: 1px; }
+  .toolbar-divider { width: 1px; height: 1.5rem; background: #d1d5db; margin: 0 0.375rem; }
+  .toolbar-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.875rem; height: 1.875rem; border-radius: 0.25rem;
+    color: #6b7280; transition: all 0.15s; cursor: pointer;
+    background: transparent; border: none; position: relative;
+  }
+  .toolbar-btn:hover { background: #e5e7eb; color: #374151; }
+  .toolbar-btn.is-active { background: #dbeafe; color: #2563eb; }
+  .toolbar-select {
+    height: 1.875rem; padding: 0 0.5rem; border: 1px solid #d1d5db;
+    border-radius: 0.25rem; font-size: 0.8125rem; color: #374151;
+    background: white; cursor: pointer;
+  }
+  .toolbar-select:focus { outline: none; border-color: #00aeef; }
+
+  /* Color popovers */
+  .color-dropdown-wrapper { position: relative; }
+  .color-indicator {
+    position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 3px; border-radius: 1px;
+  }
+  .color-popover {
+    position: absolute; top: 100%; left: 0; z-index: 50; margin-top: 0.25rem;
+    background: white; border: 1px solid #d1d5db; border-radius: 0.5rem;
+    padding: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: max-content;
+  }
+  .color-popover.hidden { display: none; }
+  .color-swatch {
+    width: 1.5rem; height: 1.5rem; border-radius: 0.25rem; border: 1px solid #d1d5db;
+    cursor: pointer; transition: transform 0.1s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch-remove {
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.625rem; color: #9ca3af;
+  }
+
+  /* Editor content */
+  .editor-content {
+    min-height: 24rem; padding: 1rem 1.25rem;
+    font-family: 'Lato', sans-serif; font-size: 1rem; line-height: 1.75; color: #1a1a1a;
+  }
+  .editor-content .tiptap { outline: none; min-height: 22rem; }
+  .editor-content .tiptap p { margin-bottom: 1em; }
+  .editor-content .tiptap h2 {
+    font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700;
+    margin-top: 1.5em; margin-bottom: 0.5em;
+  }
+  .editor-content .tiptap h3 {
+    font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 600;
+    margin-top: 1.25em; margin-bottom: 0.5em;
+  }
+  .editor-content .tiptap ul { list-style: disc; padding-left: 1.5em; margin: 1em 0; }
+  .editor-content .tiptap ol { list-style: decimal; padding-left: 1.5em; margin: 1em 0; }
+  .editor-content .tiptap li { margin-bottom: 0.25em; }
+  .editor-content .tiptap li p { margin-bottom: 0.25em; }
+  .editor-content .tiptap blockquote {
+    border-left: 4px solid #00aeef; padding-left: 1em; margin: 1.5em 0;
+    font-style: italic; color: #666;
+  }
+  .editor-content .tiptap a { color: #00aeef; text-decoration: underline; cursor: pointer; }
+  .editor-content .tiptap img {
+    max-width: 100%; border-radius: 0.75rem; margin: 1.5em 0;
+    display: block; cursor: pointer; transition: outline 0.15s;
+  }
+  .editor-content .tiptap .ProseMirror-selectednode {
+    outline: 2px solid #00aeef; outline-offset: 3px; border-radius: 0.75rem;
+  }
+
+  /* Image floating toolbar */
+  .image-toolbar {
+    display: flex; align-items: center; gap: 0.375rem;
+    padding: 0.375rem 0.625rem; background: #1a1a1a; border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    position: fixed; z-index: 60;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    pointer-events: auto;
+  }
+  .image-toolbar.hidden { display: none; }
+  .image-toolbar-label { font-size: 0.75rem; color: #9ca3af; }
+  .image-toolbar-btn {
+    font-size: 0.75rem; color: #e5e7eb; background: transparent; border: 1px solid #374151;
+    border-radius: 0.25rem; padding: 0.25rem 0.5rem; cursor: pointer; transition: all 0.15s;
+  }
+  .image-toolbar-btn:hover { background: #374151; color: #fff; }
+  .image-toolbar-btn.is-active { background: #00aeef; border-color: #00aeef; color: #fff; }
+  .editor-content .tiptap hr { border: none; border-top: 2px solid #e5e7eb; margin: 2em 0; }
+  .editor-content .tiptap strong { font-weight: 700; }
+  .editor-content .tiptap em { font-style: italic; }
+  .editor-content .tiptap u { text-decoration: underline; }
+  .editor-content .tiptap s { text-decoration: line-through; }
+  .editor-content .tiptap sup { vertical-align: super; font-size: 0.75em; }
+  .editor-content .tiptap sub { vertical-align: sub; font-size: 0.75em; }
+  .editor-content .tiptap mark { border-radius: 2px; padding: 0 2px; }
+  .editor-content .tiptap pre {
+    background: #1a1a1a; color: #e5e7eb; padding: 1em; border-radius: 0.5rem;
+    overflow-x: auto; margin: 1.5em 0; font-family: monospace; font-size: 0.875rem;
+  }
+  .editor-content .tiptap code {
+    background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.875rem;
+  }
+  .editor-content .tiptap pre code { background: none; padding: 0; color: inherit; }
+
+  /* YouTube embed */
+  .editor-content .tiptap div[data-youtube-video] {
+    position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+    margin: 1.5em 0; border-radius: 0.75rem;
+  }
+  .editor-content .tiptap div[data-youtube-video] iframe {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  /* Placeholder */
+  .editor-content .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder); float: left; color: #adb5bd;
+    pointer-events: none; height: 0;
+  }
+
+  /* Status bar */
+  .editor-status {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.375rem 0.75rem; background: #f9fafb; border-top: 1px solid #e5e7eb;
+    font-size: 0.75rem; color: #9ca3af;
+  }
+  .status-separator { color: #d1d5db; }
+
+  /* Dialogs */
+  .editor-dialog {
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-width: 28rem;
+    width: calc(100% - 2rem);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    animation: dialogFadeIn 0.15s ease-out;
+  }
+  .editor-dialog[open] { display: flex; flex-direction: column; }
+  .editor-dialog::backdrop {
+    background: rgba(0,0,0,0.4);
+    animation: backdropFadeIn 0.15s ease-out;
+  }
+  @keyframes dialogFadeIn {
+    from { opacity: 0; transform: translate(-50%, -48%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+  @keyframes backdropFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .dialog-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    color: #9ca3af;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dialog-close:hover { background: #f3f4f6; color: #374151; }
+  .dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .dialog-input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .dialog-input:focus {
+    outline: none;
+    border-color: #00aeef;
+    box-shadow: 0 0 0 1px #00aeef;
+  }
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  .dialog-cancel {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    background: none;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .dialog-cancel:hover { background: #f3f4f6; }
+  .dialog-submit {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    background: #62a884;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .dialog-submit:hover { background: rgba(98, 168, 132, 0.9); }
+
+  /* Preview toggle button */
+  .toolbar-btn-preview {
+    width: auto; padding: 0 0.5rem; gap: 0.25rem;
+  }
+
+  /* Preview panel */
+  .preview-panel {
+    position: fixed; inset: 0; z-index: 100;
+    background: #fff; display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .preview-panel.hidden { display: none; }
+
+  .preview-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem 1.5rem; background: #1a1a1a; flex-shrink: 0;
+  }
+  .preview-close-btn {
+    color: #fff; background: none; border: none; cursor: pointer;
+    padding: 0.25rem; border-radius: 0.25rem; transition: background 0.15s;
+  }
+  .preview-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+  .preview-panel-body {
+    flex: 1; overflow-y: auto; background: #fff;
+    padding: 0 1rem;
+  }
+</style>
+
+<script>
+  import { Editor } from '@tiptap/core'
+  import StarterKit from '@tiptap/starter-kit'
+  import Link from '@tiptap/extension-link'
+  import Image from '@tiptap/extension-image'
+  import Underline from '@tiptap/extension-underline'
+
+  // Custom Image extension with width support
+  const ResizableImage = Image.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        width: {
+          default: null,
+          parseHTML: el => el.getAttribute('width') || el.style.width?.replace('px', '') || null,
+          renderHTML: attrs => {
+            if (!attrs.width) return {}
+            return { width: attrs.width, style: `width: ${attrs.width}px` }
+          },
+        },
+      }
+    },
+  })
+  import Placeholder from '@tiptap/extension-placeholder'
+  import TextAlign from '@tiptap/extension-text-align'
+  import Highlight from '@tiptap/extension-highlight'
+  import { Color } from '@tiptap/extension-color'
+  import { TextStyle } from '@tiptap/extension-text-style'
+  import Superscript from '@tiptap/extension-superscript'
+  import Subscript from '@tiptap/extension-subscript'
+  import Youtube from '@tiptap/extension-youtube'
+  import CharacterCount from '@tiptap/extension-character-count'
+  import Typography from '@tiptap/extension-typography'
+
+  const form = document.getElementById('post-form') as HTMLFormElement
+  const formStatus = document.getElementById('form-status')!
+  const autosaveStatus = document.getElementById('autosave-status')!
+  const titleInput = document.getElementById('title') as HTMLInputElement
+  const slugPreview = document.getElementById('slug-value')
+  const wordCountEl = document.getElementById('word-count')!
+  const charCountEl = document.getElementById('char-count')!
+  const postId = form.dataset.postId
+  const mode = form.dataset.mode as 'create' | 'edit'
+  const draftKey = mode === 'edit' ? `draft-${postId}` : 'draft-novo'
+  const initialContent = (window as any).__editorInitialContent || ''
+
+  // ---- Editor ----
+  const editor = new Editor({
+    element: document.getElementById('editor-content')!,
+    extensions: [
+      StarterKit.configure({ heading: { levels: [2, 3] } }),
+      Link.configure({ openOnClick: false, HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' } }),
+      ResizableImage,
+      Underline,
+      Placeholder.configure({ placeholder: 'Comece a escrever seu artigo aqui...' }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Highlight.configure({ multicolor: true }),
+      TextStyle,
+      Color,
+      Superscript,
+      Subscript,
+      Youtube.configure({ inline: false, ccLanguage: 'pt' }),
+      CharacterCount,
+      Typography,
+    ],
+    content: initialContent || '<p></p>',
+    onUpdate: () => { updateToolbar(); updateCounts() },
+    onSelectionUpdate: () => updateToolbar(),
+  })
+
+  // ---- Toolbar state ----
+  const headingSelect = document.getElementById('heading-select') as HTMLSelectElement
+
+  function updateToolbar() {
+    document.querySelectorAll('#editor-toolbar .toolbar-btn[data-action]').forEach(btn => {
+      const a = (btn as HTMLElement).dataset.action!
+      let active = false
+      switch (a) {
+        case 'bold': active = editor.isActive('bold'); break
+        case 'italic': active = editor.isActive('italic'); break
+        case 'underline': active = editor.isActive('underline'); break
+        case 'strike': active = editor.isActive('strike'); break
+        case 'superscript': active = editor.isActive('superscript'); break
+        case 'subscript': active = editor.isActive('subscript'); break
+        case 'bulletList': active = editor.isActive('bulletList'); break
+        case 'orderedList': active = editor.isActive('orderedList'); break
+        case 'blockquote': active = editor.isActive('blockquote'); break
+        case 'codeBlock': active = editor.isActive('codeBlock'); break
+        case 'link': active = editor.isActive('link'); break
+        case 'alignLeft': active = editor.isActive({ textAlign: 'left' }); break
+        case 'alignCenter': active = editor.isActive({ textAlign: 'center' }); break
+        case 'alignRight': active = editor.isActive({ textAlign: 'right' }); break
+        case 'alignJustify': active = editor.isActive({ textAlign: 'justify' }); break
+      }
+      btn.classList.toggle('is-active', active)
+    })
+
+    if (editor.isActive('heading', { level: 2 })) headingSelect.value = '2'
+    else if (editor.isActive('heading', { level: 3 })) headingSelect.value = '3'
+    else headingSelect.value = 'paragraph'
+  }
+
+  function updateCounts() {
+    wordCountEl.textContent = `${editor.storage.characterCount.words()} palavras`
+    charCountEl.textContent = `${editor.storage.characterCount.characters()} caracteres`
+  }
+  updateCounts()
+
+  // ---- Toolbar actions ----
+  document.getElementById('editor-toolbar')!.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('.toolbar-btn[data-action]') as HTMLElement | null
+    if (!btn) return
+    const a = btn.dataset.action
+    switch (a) {
+      case 'bold': editor.chain().focus().toggleBold().run(); break
+      case 'italic': editor.chain().focus().toggleItalic().run(); break
+      case 'underline': editor.chain().focus().toggleUnderline().run(); break
+      case 'strike': editor.chain().focus().toggleStrike().run(); break
+      case 'superscript': editor.chain().focus().toggleSuperscript().run(); break
+      case 'subscript': editor.chain().focus().toggleSubscript().run(); break
+      case 'bulletList': editor.chain().focus().toggleBulletList().run(); break
+      case 'orderedList': editor.chain().focus().toggleOrderedList().run(); break
+      case 'blockquote': editor.chain().focus().toggleBlockquote().run(); break
+      case 'codeBlock': editor.chain().focus().toggleCodeBlock().run(); break
+      case 'horizontalRule': editor.chain().focus().setHorizontalRule().run(); break
+      case 'alignLeft': editor.chain().focus().setTextAlign('left').run(); break
+      case 'alignCenter': editor.chain().focus().setTextAlign('center').run(); break
+      case 'alignRight': editor.chain().focus().setTextAlign('right').run(); break
+      case 'alignJustify': editor.chain().focus().setTextAlign('justify').run(); break
+      case 'undo': editor.chain().focus().undo().run(); break
+      case 'redo': editor.chain().focus().redo().run(); break
+      case 'link': {
+        if (editor.isActive('link')) { editor.chain().focus().unsetLink().run() }
+        else { openDialog('link') }
+        break
+      }
+      case 'image': { openDialog('image'); break }
+      case 'youtube': { openDialog('youtube'); break }
+    }
+  })
+
+  headingSelect.addEventListener('change', () => {
+    const v = headingSelect.value
+    if (v === 'paragraph') editor.chain().focus().setParagraph().run()
+    else editor.chain().focus().toggleHeading({ level: Number(v) as 2 | 3 }).run()
+  })
+
+  // ---- Color popovers ----
+  function setupColorPopover(btnId: string, popoverId: string, applyFn: (color: string) => void) {
+    const btn = document.getElementById(btnId)!
+    const popover = document.getElementById(popoverId)!
+
+    btn.addEventListener('click', e => {
+      e.stopPropagation()
+      document.querySelectorAll('.color-popover').forEach(p => { if (p !== popover) p.classList.add('hidden') })
+      popover.classList.toggle('hidden')
+    })
+
+    popover.addEventListener('click', e => {
+      const swatch = (e.target as HTMLElement).closest('.color-swatch') as HTMLElement | null
+      if (!swatch) return
+      const color = swatch.dataset.color ?? swatch.dataset.highlight ?? ''
+      applyFn(color)
+      popover.classList.add('hidden')
+    })
+  }
+
+  setupColorPopover('text-color-btn', 'text-color-popover', color => {
+    if (color) {
+      editor.chain().focus().setColor(color).run()
+      document.getElementById('text-color-indicator')!.style.background = color
+    } else {
+      editor.chain().focus().unsetColor().run()
+      document.getElementById('text-color-indicator')!.style.background = '#1a1a1a'
+    }
+  })
+
+  setupColorPopover('highlight-btn', 'highlight-popover', color => {
+    if (color) editor.chain().focus().toggleHighlight({ color }).run()
+    else editor.chain().focus().unsetHighlight().run()
+  })
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.color-popover').forEach(p => p.classList.add('hidden'))
+  })
+
+  // ---- Dialogs ----
+  const dialogs = {
+    link: document.getElementById('dialog-link') as HTMLDialogElement,
+    image: document.getElementById('dialog-image') as HTMLDialogElement,
+    youtube: document.getElementById('dialog-youtube') as HTMLDialogElement,
+  }
+
+  function openDialog(type: 'link' | 'image' | 'youtube') {
+    const dialog = dialogs[type]
+    // Reset inputs
+    dialog.querySelectorAll('input').forEach(i => (i as HTMLInputElement).value = '')
+    dialog.showModal()
+  }
+
+  // Close and cancel buttons
+  document.querySelectorAll('.dialog-cancel, .dialog-close').forEach(btn => {
+    btn.addEventListener('click', () => {
+      (btn.closest('dialog') as HTMLDialogElement).close()
+      editor.chain().focus().run()
+    })
+  })
+
+  // Link dialog submit
+  dialogs.link.querySelector('form')!.addEventListener('submit', () => {
+    const url = (document.getElementById('dialog-link-url') as HTMLInputElement).value
+    if (url) editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  })
+
+  // Image dialog submit
+  dialogs.image.querySelector('form')!.addEventListener('submit', () => {
+    const url = (document.getElementById('dialog-image-url') as HTMLInputElement).value
+    const alt = (document.getElementById('dialog-image-alt') as HTMLInputElement).value
+    if (url) editor.chain().focus().setImage({ src: url, alt: alt || undefined }).run()
+  })
+
+  // YouTube dialog submit
+  dialogs.youtube.querySelector('form')!.addEventListener('submit', () => {
+    const url = (document.getElementById('dialog-youtube-url') as HTMLInputElement).value
+    if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run()
+  })
+
+  // Close dialogs on backdrop click (outside the dialog box)
+  Object.values(dialogs).forEach(dialog => {
+    dialog.addEventListener('click', e => {
+      const rect = dialog.getBoundingClientRect()
+      const clickedOutside =
+        e.clientX < rect.left || e.clientX > rect.right ||
+        e.clientY < rect.top || e.clientY > rect.bottom
+      if (clickedOutside) { dialog.close(); editor.chain().focus().run() }
+    })
+  })
+
+  // ---- Slug ----
+  function generateSlug(title: string): string {
+    return title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  }
+  if (slugPreview) {
+    titleInput.addEventListener('input', () => { slugPreview.textContent = generateSlug(titleInput.value) || '...' })
+  }
+
+  // ---- Autosave ----
+  function saveDraft() {
+    const html = editor.getHTML()
+    const data = {
+      title: titleInput.value,
+      description: (document.getElementById('description') as HTMLInputElement).value,
+      content: html, heroImage: (document.getElementById('heroImage') as HTMLInputElement).value,
+      authorName: (document.getElementById('authorName') as HTMLInputElement).value,
+      published: (document.getElementById('published') as HTMLInputElement).checked,
+      slug: (document.getElementById('slug') as HTMLInputElement)?.value || '',
+      savedAt: Date.now(),
+    }
+    if (!data.title && html === '<p></p>') return
+    localStorage.setItem(draftKey, JSON.stringify(data))
+    const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    autosaveStatus.textContent = `Rascunho salvo as ${time}`
+  }
+
+  function restoreDraft() {
+    const saved = localStorage.getItem(draftKey)
+    if (!saved) return
+    const data = JSON.parse(saved)
+    if (mode === 'edit' && initialContent) return
+    const time = new Date(data.savedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    if (!confirm(`Existe um rascunho salvo as ${time}. Deseja restaurar?`)) { localStorage.removeItem(draftKey); return }
+    titleInput.value = data.title || ''
+    ;(document.getElementById('description') as HTMLInputElement).value = data.description || ''
+    ;(document.getElementById('heroImage') as HTMLInputElement).value = data.heroImage || ''
+    ;(document.getElementById('authorName') as HTMLInputElement).value = data.authorName || ''
+    ;(document.getElementById('published') as HTMLInputElement).checked = data.published || false
+    if (data.content) editor.commands.setContent(data.content)
+    const slugInput = document.getElementById('slug') as HTMLInputElement | null
+    if (slugInput && data.slug) slugInput.value = data.slug
+    if (slugPreview) slugPreview.textContent = generateSlug(data.title) || '...'
+    updateCounts()
+  }
+
+  const autosaveInterval = setInterval(saveDraft, 30000)
+  restoreDraft()
+
+  // ---- Submit ----
+  form.addEventListener('submit', async e => {
+    e.preventDefault()
+    const authorName = (document.getElementById('authorName') as HTMLInputElement).value
+    const data: Record<string, unknown> = {
+      title: titleInput.value,
+      description: (document.getElementById('description') as HTMLInputElement).value,
+      content: editor.getHTML(),
+      heroImage: (document.getElementById('heroImage') as HTMLInputElement).value || null,
+      published: (document.getElementById('published') as HTMLInputElement).checked,
+      authorName: authorName || undefined,
+    }
+    if (mode === 'edit') data.slug = (document.getElementById('slug') as HTMLInputElement).value
+
+    formStatus.textContent = 'Salvando...'
+    formStatus.className = 'text-sm text-grafite/60'
+    try {
+      const url = mode === 'edit' ? `/api/posts/${postId}` : '/api/posts'
+      const res = await fetch(url, { method: mode === 'edit' ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      if (res.ok) {
+        clearInterval(autosaveInterval); localStorage.removeItem(draftKey)
+        if (mode === 'create') window.location.href = '/admin'
+        else { formStatus.textContent = 'Salvo com sucesso!'; formStatus.className = 'text-sm text-green-600'; autosaveStatus.textContent = '' }
+      } else { const error = await res.text(); formStatus.textContent = `Erro: ${error}`; formStatus.className = 'text-sm text-red-600' }
+    } catch { formStatus.textContent = 'Erro de conexao.'; formStatus.className = 'text-sm text-red-600' }
+  })
+
+  // ---- Image toolbar ----
+  const imageToolbar = document.getElementById('image-toolbar')!
+  const editorWrapper = document.getElementById('editor-wrapper')!
+
+  function updateImageToolbar() {
+    if (!editor.isActive('image')) {
+      imageToolbar.classList.add('hidden')
+      return
+    }
+
+    const { node } = editor.state.selection as any
+    if (!node || node.type.name !== 'image') {
+      imageToolbar.classList.add('hidden')
+      return
+    }
+
+    // Find the selected image element in the DOM
+    const pos = editor.state.selection.from
+    let imgEl: HTMLElement | null = null
+
+    try {
+      const nodeDOM = editor.view.nodeDOM(pos)
+      if (nodeDOM instanceof HTMLElement) {
+        imgEl = nodeDOM.nodeName === 'IMG' ? nodeDOM : nodeDOM.querySelector('img')
+      }
+    } catch { /* ignore */ }
+
+    if (!imgEl) {
+      // Fallback: find the selected node via ProseMirror class
+      imgEl = editorWrapper.querySelector('.ProseMirror-selectednode') as HTMLElement
+      if (imgEl && imgEl.nodeName !== 'IMG') imgEl = imgEl.querySelector('img')
+    }
+
+    if (!imgEl) {
+      imageToolbar.classList.add('hidden')
+      return
+    }
+
+    const imgRect = imgEl.getBoundingClientRect()
+
+    // Show first to get correct offsetHeight
+    imageToolbar.classList.remove('hidden')
+
+    // Position centered above the image (fixed to viewport)
+    const toolbarH = imageToolbar.offsetHeight
+    imageToolbar.style.top = `${imgRect.top - toolbarH - 8}px`
+    imageToolbar.style.left = `${imgRect.left + imgRect.width / 2}px`
+
+    // Highlight active size
+    const currentWidth = node.attrs.width
+    imageToolbar.querySelectorAll('.image-toolbar-btn').forEach(btn => {
+      const w = (btn as HTMLElement).dataset.imgWidth
+      btn.classList.toggle('is-active', w === String(currentWidth || ''))
+    })
+  }
+
+  editor.on('selectionUpdate', updateImageToolbar)
+  editor.on('update', () => { if (editor.isActive('image')) updateImageToolbar(); else imageToolbar.classList.add('hidden') })
+
+  imageToolbar.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('.image-toolbar-btn') as HTMLElement | null
+    if (!btn) return
+    const width = btn.dataset.imgWidth
+    if (width) {
+      editor.chain().focus().updateAttributes('image', { width: Number(width) }).run()
+    } else {
+      editor.chain().focus().updateAttributes('image', { width: null }).run()
+    }
+    updateImageToolbar()
+  })
+
+  // Hide image toolbar when clicking outside
+  document.addEventListener('click', e => {
+    if (!editorWrapper.contains(e.target as Node) && !imageToolbar.contains(e.target as Node)) {
+      imageToolbar.classList.add('hidden')
+    }
+  })
+
+  // ---- Preview panel ----
+  const previewPanel = document.getElementById('preview-panel')!
+  const previewToggle = document.getElementById('preview-toggle')!
+  const previewClose = document.getElementById('preview-close')!
+  const previewTitle = document.getElementById('preview-title')!
+  const previewDate = document.getElementById('preview-date')!
+  const previewAuthor = document.getElementById('preview-author')!
+  const previewContent = document.getElementById('preview-content')!
+
+  function openPreview() {
+    previewTitle.textContent = titleInput.value || 'Sem titulo'
+    previewDate.textContent = new Date().toLocaleDateString('pt-BR', {
+      year: 'numeric', month: 'long', day: 'numeric',
+    })
+    const author = (document.getElementById('authorName') as HTMLInputElement).value || 'Projeto Padres para a Igreja de Palmas'
+    previewAuthor.textContent = `por ${author}`
+    previewContent.innerHTML = editor.getHTML()
+    previewPanel.classList.remove('hidden')
+    document.body.style.overflow = 'hidden'
+  }
+
+  function closePreview() {
+    previewPanel.classList.add('hidden')
+    document.body.style.overflow = ''
+  }
+
+  previewToggle.addEventListener('click', openPreview)
+  previewClose.addEventListener('click', closePreview)
+  previewPanel.addEventListener('keydown', e => { if (e.key === 'Escape') closePreview() })
+</script>

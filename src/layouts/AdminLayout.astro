@@ -1,0 +1,53 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import { Image } from 'astro:assets'
+import logoColorida from '@/assets/images/logo-colorida.png'
+import { SITE_TITLE } from '@/consts'
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+const user = Astro.locals.user
+---
+
+<BaseLayout title={`${title} | Admin`} description="Painel administrativo">
+  <div class="bg-grafite text-white">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="/admin" class="flex items-center gap-3">
+        <Image src={logoColorida} alt={SITE_TITLE} class="h-8 w-auto" width={32} />
+        <span class="font-display text-sm font-semibold">Admin</span>
+      </a>
+
+      <div class="flex items-center gap-4">
+        {user && <span class="hidden text-sm text-white/70 sm:inline">{user.name}</span>}
+        <a href="/" class="text-sm text-white/70 transition-colors hover:text-white">
+          Voltar ao site
+        </a>
+        <button
+          id="logout-btn"
+          type="button"
+          class="rounded-lg bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20"
+        >
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <slot />
+  </main>
+</BaseLayout>
+
+<script>
+  import { createAuthClient } from 'better-auth/client'
+
+  const client = createAuthClient()
+
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await client.signOut()
+    window.location.href = '/'
+  })
+</script>

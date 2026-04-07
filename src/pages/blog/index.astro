@@ -1,0 +1,89 @@
+---
+export const prerender = false
+
+import MainLayout from '@/layouts/MainLayout.astro'
+import { SITE_URL, SITE_TITLE } from '@/consts'
+import { db } from '@/db'
+import { posts } from '@/db/schema'
+import { desc, eq } from 'drizzle-orm'
+
+const allPosts = await db
+  .select()
+  .from(posts)
+  .where(eq(posts.published, true))
+  .orderBy(desc(posts.createdAt))
+
+const PAGE_URL = `${SITE_URL}/blog`
+const PAGE_TITLE = `Blog | ${SITE_TITLE}`
+const PAGE_DESCRIPTION =
+  'Reflexões, notícias e partilhas do Projeto Padres para a Igreja de Palmas.'
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: PAGE_URL },
+  ],
+}
+---
+
+<MainLayout
+  title={PAGE_TITLE}
+  description={PAGE_DESCRIPTION}
+  canonicalURL={PAGE_URL}
+  jsonLd={[breadcrumbJsonLd]}
+>
+  <section class="bg-bg-azul min-h-screen pt-28 pb-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <header class="mb-12 text-center">
+        <span
+          class="text-verde mb-4 inline-block text-sm font-semibold tracking-wider uppercase"
+        >
+          Blog
+        </span>
+        <h1 class="text-grafite text-3xl font-light sm:text-4xl">
+          Reflexões e <span class="font-semibold">Partilhas</span>
+        </h1>
+      </header>
+
+      {
+        allPosts.length === 0 ? (
+          <p class="text-grafite/60 text-center text-lg">
+            Nenhuma publicação por enquanto. Volte em breve!
+          </p>
+        ) : (
+          <ul class="space-y-8">
+            {allPosts.map(post => (
+              <li>
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="group block rounded-2xl bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                >
+                  <article>
+                    <time
+                      datetime={new Date(post.createdAt).toISOString()}
+                      class="text-grafite/50 text-sm"
+                    >
+                      {new Date(post.createdAt).toLocaleDateString('pt-BR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </time>
+                    <h2 class="text-grafite group-hover:text-azul mt-2 text-xl font-semibold transition-colors">
+                      {post.title}
+                    </h2>
+                    <p class="text-grafite/70 mt-2 line-clamp-2">
+                      {post.description}
+                    </p>
+                  </article>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+</MainLayout>

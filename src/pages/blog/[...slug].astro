@@ -1,0 +1,34 @@
+---
+export const prerender = false
+
+import { db } from '@/db'
+import { posts } from '@/db/schema'
+import { eq, and } from 'drizzle-orm'
+import BlogPost from '@/layouts/BlogPost.astro'
+
+const { slug } = Astro.params
+
+if (!slug) {
+  return Astro.redirect('/blog')
+}
+
+const [post] = await db
+  .select()
+  .from(posts)
+  .where(and(eq(posts.slug, slug), eq(posts.published, true)))
+
+if (!post) {
+  return Astro.redirect('/404')
+}
+---
+
+<BlogPost
+  title={post.title}
+  description={post.description}
+  pubDate={new Date(post.createdAt)}
+  updatedDate={new Date(post.updatedAt)}
+  author={post.authorName}
+  heroImage={post.heroImage ?? undefined}
+>
+  <Fragment set:html={post.content} />
+</BlogPost>

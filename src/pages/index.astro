@@ -1,9 +1,12 @@
 ---
+export const prerender = false
+
 import MainLayout from '../layouts/MainLayout.astro'
 import Hero from '../components/Hero.astro'
 import SobreProjeto from '../components/SobreProjeto.astro'
 import Apresentacao from '../components/Apresentacao.astro'
 import Pilares from '../components/Pilares.astro'
+import BlogRecentes from '../components/BlogRecentes.astro'
 import Contato from '../components/Contato.astro'
 import { SITE_URL, SITE_TITLE, SITE_DESCRIPTION } from '../consts'
 
@@ -32,5 +35,6 @@ const homeJsonLd = {
   <SobreProjeto />
   <Apresentacao />
   <Pilares />
+  <BlogRecentes />
   <Contato />
 </MainLayout>

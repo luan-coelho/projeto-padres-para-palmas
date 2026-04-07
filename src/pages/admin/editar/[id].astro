@@ -1,0 +1,30 @@
+---
+export const prerender = false
+
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import PostEditor from '@/components/PostEditor.astro'
+import { db } from '@/db'
+import { posts } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+
+const id = Number(Astro.params.id)
+
+if (isNaN(id)) {
+  return Astro.redirect('/admin')
+}
+
+const [post] = await db.select().from(posts).where(eq(posts.id, id))
+
+if (!post) {
+  return Astro.redirect('/admin')
+}
+---
+
+<AdminLayout title="Editar Publicacao">
+  <div class="mb-8">
+    <a href="/admin" class="text-grafite/60 text-sm hover:underline">&larr; Voltar</a>
+    <h1 class="font-display mt-2 text-2xl font-bold">Editar Publicacao</h1>
+  </div>
+
+  <PostEditor post={post} />
+</AdminLayout>

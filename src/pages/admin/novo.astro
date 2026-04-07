@@ -1,0 +1,15 @@
+---
+export const prerender = false
+
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import PostEditor from '@/components/PostEditor.astro'
+---
+
+<AdminLayout title="Nova Publicacao">
+  <div class="mb-8">
+    <a href="/admin" class="text-grafite/60 text-sm hover:underline">&larr; Voltar</a>
+    <h1 class="font-display mt-2 text-2xl font-bold">Nova Publicacao</h1>
+  </div>
+
+  <PostEditor />
+</AdminLayout>
