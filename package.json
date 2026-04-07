@@ -39,6 +39,7 @@
     "astro": "^6.1.2",
     "better-auth": "^1.6.0",
     "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0",
     "postgres": "^3.4.9",
     "tailwindcss": "^4.0.6"
   },
