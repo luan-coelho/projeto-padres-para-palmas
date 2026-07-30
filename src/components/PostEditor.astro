@@ -6,6 +6,7 @@ interface Props {
     slug: string
     description: string
     content: string
+    authorName: string
     heroImage: string | null
     published: boolean
   }
@@ -269,11 +270,37 @@ const isEditing = !!post
   <!-- Imagem de capa -->
   <div>
     <label for="heroImage" class="mb-1 block text-sm font-medium">
-      Imagem de capa <span class="text-grafite/50 font-normal">(URL, opcional)</span>
+      Imagem de capa <span class="text-grafite/50 font-normal">(opcional)</span>
     </label>
     <input type="url" id="heroImage" name="heroImage" value={post?.heroImage || ''}
       class="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-azul focus:ring-azul focus:outline-none focus:ring-1"
       placeholder="https://exemplo.com/imagem.jpg" />
+    <div class="image-upload-controls">
+      <label for="hero-image-file" class="image-upload-button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" x2="12" y1="3" y2="15"/>
+        </svg>
+        Enviar imagem
+      </label>
+      <input
+        type="file"
+        id="hero-image-file"
+        class="sr-only"
+        accept="image/jpeg,image/png,image/webp,image/avif"
+      />
+      <span id="hero-upload-status" class="image-upload-help" aria-live="polite">
+        JPG, PNG, WebP ou AVIF, até 5 MB
+      </span>
+    </div>
+    <div id="hero-image-preview" class:list={['hero-image-preview', { hidden: !post?.heroImage }]}>
+      <img
+        id="hero-image-preview-img"
+        src={post?.heroImage || ''}
+        alt="Prévia da imagem de capa"
+      />
+    </div>
   </div>
 
   <div class="flex items-center gap-2">
@@ -284,7 +311,11 @@ const isEditing = !!post
   </div>
 
   <div class="flex items-center gap-4 border-t border-gray-200 pt-6">
-    <button type="submit" class="bg-verde hover:bg-verde/90 rounded-lg px-6 py-2.5 font-medium text-white transition-colors">
+    <button
+      type="submit"
+      id="post-submit"
+      class="bg-verde hover:bg-verde/90 rounded-lg px-6 py-2.5 font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+    >
       {isEditing ? 'Salvar alteracoes' : 'Salvar publicacao'}
     </button>
     <span id="form-status" class="text-sm"></span>
@@ -319,10 +350,26 @@ const isEditing = !!post
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
     </button>
   </div>
-  <form method="dialog" class="dialog-body">
+  <form id="image-dialog-form" class="dialog-body">
+    <div>
+      <label for="dialog-image-file" class="mb-1 block text-sm font-medium">
+        Enviar do computador
+      </label>
+      <input
+        type="file"
+        id="dialog-image-file"
+        class="dialog-file-input"
+        accept="image/jpeg,image/png,image/webp,image/avif"
+      />
+      <p class="image-upload-help">JPG, PNG, WebP ou AVIF, até 5 MB</p>
+      <progress id="dialog-image-progress" class="image-upload-progress" max="100" value="0" hidden>
+        0%
+      </progress>
+    </div>
+    <div class="dialog-separator"><span>ou use uma URL</span></div>
     <div>
       <label for="dialog-image-url" class="mb-1 block text-sm font-medium">URL da imagem</label>
-      <input type="url" id="dialog-image-url" required placeholder="https://exemplo.com/imagem.jpg" class="dialog-input" />
+      <input type="url" id="dialog-image-url" placeholder="https://exemplo.com/imagem.jpg" class="dialog-input" />
     </div>
     <div>
       <label for="dialog-image-alt" class="mb-1 block text-sm font-medium">
@@ -330,9 +377,10 @@ const isEditing = !!post
       </label>
       <input type="text" id="dialog-image-alt" placeholder="Descricao da imagem" class="dialog-input" />
     </div>
+    <p id="dialog-image-status" class="image-upload-status" aria-live="polite"></p>
     <div class="dialog-footer">
       <button type="button" class="dialog-cancel">Cancelar</button>
-      <button type="submit" class="dialog-submit">Inserir</button>
+      <button type="submit" id="dialog-image-submit" class="dialog-submit">Inserir imagem</button>
     </div>
   </form>
 </dialog>
@@ -575,6 +623,105 @@ const isEditing = !!post
     border-color: #00aeef;
     box-shadow: 0 0 0 1px #00aeef;
   }
+  .dialog-file-input {
+    width: 100%;
+    border: 1px dashed #9ca3af;
+    border-radius: 0.5rem;
+    padding: 0.625rem;
+    color: #4b5563;
+    font-size: 0.8125rem;
+    cursor: pointer;
+  }
+  .dialog-file-input::file-selector-button {
+    margin-right: 0.75rem;
+    border: 0;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    background: #eff6ff;
+    color: #2563eb;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .dialog-separator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .dialog-separator::before,
+  .dialog-separator::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: #e5e7eb;
+  }
+  .image-upload-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.625rem;
+  }
+  .image-upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: #4b5563;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .image-upload-button:hover {
+    border-color: #00aeef;
+    color: #007eae;
+    background: #f0faff;
+  }
+  .image-upload-help {
+    margin-top: 0.375rem;
+    color: #6b7280;
+    font-size: 0.75rem;
+  }
+  .image-upload-controls .image-upload-help { margin-top: 0; }
+  .image-upload-progress {
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    margin-top: 0.625rem;
+    accent-color: #62a884;
+  }
+  .image-upload-progress[hidden] { display: none; }
+  .image-upload-status {
+    min-height: 1.25rem;
+    color: #6b7280;
+    font-size: 0.8125rem;
+  }
+  .image-upload-status.is-error,
+  .image-upload-help.is-error { color: #dc2626; }
+  .image-upload-status.is-success,
+  .image-upload-help.is-success { color: #15803d; }
+  .hero-image-preview {
+    width: min(100%, 24rem);
+    margin-top: 0.75rem;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+  }
+  .hero-image-preview.hidden { display: none; }
+  .hero-image-preview img {
+    display: block;
+    width: 100%;
+    max-height: 12rem;
+    object-fit: cover;
+  }
   .dialog-footer {
     display: flex;
     justify-content: flex-end;
@@ -604,6 +751,12 @@ const isEditing = !!post
     transition: background 0.15s;
   }
   .dialog-submit:hover { background: rgba(98, 168, 132, 0.9); }
+  .dialog-submit:disabled,
+  .dialog-cancel:disabled,
+  .dialog-close:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
 
   /* Preview toggle button */
   .toolbar-btn-preview {
@@ -635,6 +788,7 @@ const isEditing = !!post
 </style>
 
 <script>
+  import { upload } from '@vercel/blob/client'
   import { Editor } from '@tiptap/core'
   import StarterKit from '@tiptap/starter-kit'
   import Link from '@tiptap/extension-link'
@@ -669,6 +823,7 @@ const isEditing = !!post
   import Typography from '@tiptap/extension-typography'
 
   const form = document.getElementById('post-form') as HTMLFormElement
+  const postSubmitButton = document.getElementById('post-submit') as HTMLButtonElement
   const formStatus = document.getElementById('form-status')!
   const autosaveStatus = document.getElementById('autosave-status')!
   const titleInput = document.getElementById('title') as HTMLInputElement
@@ -679,6 +834,71 @@ const isEditing = !!post
   const mode = form.dataset.mode as 'create' | 'edit'
   const draftKey = mode === 'edit' ? `draft-${postId}` : 'draft-novo'
   const initialContent = (window as any).__editorInitialContent || ''
+
+  const MAX_IMAGE_SIZE_IN_BYTES = 5 * 1024 * 1024
+  const IMAGE_EXTENSION_BY_TYPE: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/avif': 'avif',
+  }
+
+  type ImageDestination = 'content' | 'covers'
+  type StatusTone = 'default' | 'error' | 'success'
+
+  function setUploadStatus(element: HTMLElement, message: string, tone: StatusTone = 'default') {
+    element.textContent = message
+    element.classList.toggle('is-error', tone === 'error')
+    element.classList.toggle('is-success', tone === 'success')
+  }
+
+  function validateImageFile(file: File) {
+    if (!IMAGE_EXTENSION_BY_TYPE[file.type]) {
+      throw new Error('Formato não permitido. Use JPG, PNG, WebP ou AVIF.')
+    }
+
+    if (file.size === 0) {
+      throw new Error('O arquivo selecionado está vazio.')
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_IN_BYTES) {
+      throw new Error('A imagem deve ter no máximo 5 MB.')
+    }
+  }
+
+  function buildImagePathname(file: File, destination: ImageDestination) {
+    const baseName =
+      file.name
+        .replace(/\.[^.]+$/, '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '')
+        .slice(0, 120) || 'imagem'
+
+    return `blog/${destination}/${baseName}.${IMAGE_EXTENSION_BY_TYPE[file.type]}`
+  }
+
+  async function uploadBlogImage(
+    file: File,
+    destination: ImageDestination,
+    onProgress: (percentage: number) => void,
+  ) {
+    validateImageFile(file)
+
+    return upload(buildImagePathname(file, destination), file, {
+      access: 'public',
+      handleUploadUrl: '/api/uploads/images',
+      contentType: file.type,
+      onUploadProgress: progress => onProgress(progress.percentage),
+    })
+  }
+
+  function getUploadErrorMessage(error: unknown) {
+    if (error instanceof Error && error.message) return error.message
+    return 'Não foi possível enviar a imagem. Tente novamente.'
+  }
 
   // ---- Editor ----
   const editor = new Editor({
@@ -826,11 +1046,33 @@ const isEditing = !!post
     image: document.getElementById('dialog-image') as HTMLDialogElement,
     youtube: document.getElementById('dialog-youtube') as HTMLDialogElement,
   }
+  const imageDialogForm = document.getElementById('image-dialog-form') as HTMLFormElement
+  const imageFileInput = document.getElementById('dialog-image-file') as HTMLInputElement
+  const imageUrlInput = document.getElementById('dialog-image-url') as HTMLInputElement
+  const imageAltInput = document.getElementById('dialog-image-alt') as HTMLInputElement
+  const imageDialogStatus = document.getElementById('dialog-image-status')!
+  const imageDialogProgress = document.getElementById('dialog-image-progress') as HTMLProgressElement
+  const imageDialogSubmit = document.getElementById('dialog-image-submit') as HTMLButtonElement
+  let imageDialogIsUploading = false
+
+  function setImageDialogUploading(isUploading: boolean) {
+    imageDialogIsUploading = isUploading
+    dialogs.image.querySelectorAll('button, input').forEach(control => {
+      ;(control as HTMLButtonElement | HTMLInputElement).disabled = isUploading
+    })
+    imageDialogProgress.hidden = !isUploading
+    imageDialogSubmit.textContent = isUploading ? 'Enviando... 0%' : 'Inserir imagem'
+  }
 
   function openDialog(type: 'link' | 'image' | 'youtube') {
     const dialog = dialogs[type]
     // Reset inputs
     dialog.querySelectorAll('input').forEach(i => (i as HTMLInputElement).value = '')
+    if (type === 'image') {
+      setImageDialogUploading(false)
+      imageDialogProgress.value = 0
+      setUploadStatus(imageDialogStatus, '')
+    }
     dialog.showModal()
   }
 
@@ -848,11 +1090,63 @@ const isEditing = !!post
     if (url) editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   })
 
+  imageFileInput.addEventListener('change', () => {
+    const file = imageFileInput.files?.[0]
+    if (!file) {
+      setUploadStatus(imageDialogStatus, '')
+      return
+    }
+
+    try {
+      validateImageFile(file)
+      setUploadStatus(
+        imageDialogStatus,
+        `${file.name} selecionada (${(file.size / 1024 / 1024).toFixed(1)} MB).`,
+      )
+    } catch (error) {
+      imageFileInput.value = ''
+      setUploadStatus(imageDialogStatus, getUploadErrorMessage(error), 'error')
+    }
+  })
+
   // Image dialog submit
-  dialogs.image.querySelector('form')!.addEventListener('submit', () => {
-    const url = (document.getElementById('dialog-image-url') as HTMLInputElement).value
-    const alt = (document.getElementById('dialog-image-alt') as HTMLInputElement).value
-    if (url) editor.chain().focus().setImage({ src: url, alt: alt || undefined }).run()
+  imageDialogForm.addEventListener('submit', async event => {
+    event.preventDefault()
+
+    const file = imageFileInput.files?.[0]
+    const manualUrl = imageUrlInput.value.trim()
+    const alt = imageAltInput.value.trim()
+
+    if (!file && !manualUrl) {
+      setUploadStatus(imageDialogStatus, 'Selecione uma imagem ou informe uma URL.', 'error')
+      return
+    }
+
+    if (!file) {
+      editor.chain().focus().setImage({ src: manualUrl, alt: alt || undefined }).run()
+      dialogs.image.close()
+      return
+    }
+
+    setImageDialogUploading(true)
+    setUploadStatus(imageDialogStatus, 'Preparando envio...')
+
+    try {
+      const blob = await uploadBlogImage(file, 'content', percentage => {
+        const roundedPercentage = Math.round(percentage)
+        imageDialogProgress.value = roundedPercentage
+        imageDialogProgress.textContent = `${roundedPercentage}%`
+        imageDialogSubmit.textContent = `Enviando... ${roundedPercentage}%`
+        setUploadStatus(imageDialogStatus, `Enviando imagem: ${roundedPercentage}%`)
+      })
+
+      editor.chain().focus().setImage({ src: blob.url, alt: alt || undefined }).run()
+      dialogs.image.close()
+    } catch (error) {
+      setUploadStatus(imageDialogStatus, getUploadErrorMessage(error), 'error')
+    } finally {
+      setImageDialogUploading(false)
+    }
   })
 
   // YouTube dialog submit
@@ -868,8 +1162,62 @@ const isEditing = !!post
       const clickedOutside =
         e.clientX < rect.left || e.clientX > rect.right ||
         e.clientY < rect.top || e.clientY > rect.bottom
-      if (clickedOutside) { dialog.close(); editor.chain().focus().run() }
+      if (clickedOutside && !(dialog === dialogs.image && imageDialogIsUploading)) {
+        dialog.close()
+        editor.chain().focus().run()
+      }
     })
+  })
+  dialogs.image.addEventListener('cancel', event => {
+    if (imageDialogIsUploading) event.preventDefault()
+  })
+
+  // ---- Cover image upload ----
+  const heroImageInput = document.getElementById('heroImage') as HTMLInputElement
+  const heroImageFileInput = document.getElementById('hero-image-file') as HTMLInputElement
+  const heroUploadStatus = document.getElementById('hero-upload-status')!
+  const heroImagePreview = document.getElementById('hero-image-preview')!
+  const heroImagePreviewImg = document.getElementById('hero-image-preview-img') as HTMLImageElement
+
+  function updateHeroImagePreview(url: string) {
+    if (!url) {
+      heroImagePreview.classList.add('hidden')
+      heroImagePreviewImg.removeAttribute('src')
+      return
+    }
+
+    heroImagePreviewImg.src = url
+    heroImagePreview.classList.remove('hidden')
+  }
+
+  heroImageInput.addEventListener('change', () => {
+    updateHeroImagePreview(heroImageInput.value.trim())
+  })
+
+  heroImageFileInput.addEventListener('change', async () => {
+    const file = heroImageFileInput.files?.[0]
+    if (!file) return
+
+    heroImageFileInput.disabled = true
+    postSubmitButton.disabled = true
+    setUploadStatus(heroUploadStatus, 'Preparando envio...')
+
+    try {
+      const blob = await uploadBlogImage(file, 'covers', percentage => {
+        setUploadStatus(heroUploadStatus, `Enviando imagem: ${Math.round(percentage)}%`)
+      })
+
+      heroImageInput.value = blob.url
+      updateHeroImagePreview(blob.url)
+      setUploadStatus(heroUploadStatus, 'Imagem enviada e pronta para salvar.', 'success')
+      saveDraft()
+    } catch (error) {
+      setUploadStatus(heroUploadStatus, getUploadErrorMessage(error), 'error')
+    } finally {
+      heroImageFileInput.value = ''
+      heroImageFileInput.disabled = false
+      postSubmitButton.disabled = false
+    }
   })
 
   // ---- Slug ----
@@ -908,6 +1256,7 @@ const isEditing = !!post
     titleInput.value = data.title || ''
     ;(document.getElementById('description') as HTMLInputElement).value = data.description || ''
     ;(document.getElementById('heroImage') as HTMLInputElement).value = data.heroImage || ''
+    updateHeroImagePreview(data.heroImage || '')
     ;(document.getElementById('authorName') as HTMLInputElement).value = data.authorName || ''
     ;(document.getElementById('published') as HTMLInputElement).checked = data.published || false
     if (data.content) editor.commands.setContent(data.content)

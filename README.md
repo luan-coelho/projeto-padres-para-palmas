@@ -9,6 +9,27 @@ bun install
 bun --bun run dev
 ```
 
+## Vercel Blob
+
+As imagens do blog são enviadas diretamente do navegador para um Vercel Blob
+público. O servidor da aplicação emite apenas tokens temporários para usuários
+administradores autorizados.
+
+1. No projeto da Vercel, abra **Storage**, selecione **Blob** e crie um store
+   com acesso **Public**.
+2. Conecte o store aos ambientes `Production`, `Preview` e `Development`. A
+   Vercel adicionará `BLOB_READ_WRITE_TOKEN` automaticamente.
+3. Para desenvolvimento local, baixe as variáveis do projeto:
+
+```bash
+vercel link
+vercel env pull .env.local
+```
+
+Os uploads aceitam JPG, PNG, WebP e AVIF com tamanho máximo de 5 MB. O token de
+leitura e escrita deve existir somente no servidor e nunca pode ser exposto em
+variáveis `PUBLIC_*`.
+
 # Building For Production
 
 To build this application for production:
