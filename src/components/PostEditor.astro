@@ -8,6 +8,7 @@ interface Props {
     content: string
     authorName: string
     heroImage: string | null
+    socialImage: string | null
     published: boolean
   }
 }
@@ -301,6 +302,31 @@ const isEditing = !!post
         alt="Prévia da imagem de capa"
       />
     </div>
+  </div>
+
+  <!-- Imagem de compartilhamento -->
+  <div class="social-image-panel">
+    <div>
+      <label class="block text-sm font-medium">Imagem de compartilhamento</label>
+      <p class="text-grafite/60 mt-1 text-sm">
+        Escolha a imagem exibida ao compartilhar este post no WhatsApp, Facebook, LinkedIn e
+        outras redes.
+      </p>
+    </div>
+    <input
+      type="hidden"
+      id="socialImage"
+      name="socialImage"
+      value={post?.socialImage || ''}
+    />
+    <div
+      id="social-image-options"
+      class="social-image-options"
+      aria-label="Opções de imagem de compartilhamento"
+    ></div>
+    <p id="social-image-status" class="social-image-status" aria-live="polite">
+      Carregando imagens disponíveis...
+    </p>
   </div>
 
   <div class="flex items-center gap-2">
@@ -720,7 +746,89 @@ const isEditing = !!post
     display: block;
     width: 100%;
     max-height: 12rem;
+    object-fit: contain;
+  }
+  .social-image-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    border: 1px solid #dbe4df;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    background: #f8fbf9;
+  }
+  .social-image-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 0.75rem;
+  }
+  .social-image-option {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 0.625rem;
+    padding: 0;
+    color: #374151;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px #d1d5db;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  }
+  .social-image-option:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px #62a884, 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  .social-image-option.is-selected {
+    border-color: #62a884;
+    box-shadow: 0 0 0 1px #62a884;
+  }
+  .social-image-option img,
+  .social-image-option-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1.91 / 1;
     object-fit: cover;
+    background: #e8f2ec;
+  }
+  .social-image-option-preview {
+    color: #43745a;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .social-image-option-label {
+    display: block;
+    overflow: hidden;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .social-image-option-check {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    color: #fff;
+    background: #62a884;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+  .social-image-option.is-selected .social-image-option-check { display: flex; }
+  .social-image-status {
+    color: #4b5563;
+    font-size: 0.75rem;
   }
   .dialog-footer {
     display: flex;
@@ -920,7 +1028,11 @@ const isEditing = !!post
       Typography,
     ],
     content: initialContent || '<p></p>',
-    onUpdate: () => { updateToolbar(); updateCounts() },
+    onUpdate: () => {
+      updateToolbar()
+      updateCounts()
+      scheduleSocialImageOptionsRefresh()
+    },
     onSelectionUpdate: () => updateToolbar(),
   })
 
@@ -1178,6 +1290,138 @@ const isEditing = !!post
   const heroUploadStatus = document.getElementById('hero-upload-status')!
   const heroImagePreview = document.getElementById('hero-image-preview')!
   const heroImagePreviewImg = document.getElementById('hero-image-preview-img') as HTMLImageElement
+  const socialImageInput = document.getElementById('socialImage') as HTMLInputElement
+  const socialImageOptions = document.getElementById('social-image-options')!
+  const socialImageStatus = document.getElementById('social-image-status')!
+  let socialImageRefreshTimer: number | undefined
+
+  interface SocialImageCandidate {
+    url: string
+    label: string
+  }
+
+  function getSocialImageCandidates(): SocialImageCandidate[] {
+    const candidates: SocialImageCandidate[] = []
+    const usedUrls = new Set<string>()
+    const heroImage = heroImageInput.value.trim()
+
+    if (heroImage) {
+      candidates.push({ url: heroImage, label: 'Imagem de capa' })
+      usedUrls.add(heroImage)
+    }
+
+    const content = document.createElement('div')
+    content.innerHTML = editor.getHTML()
+    content.querySelectorAll<HTMLImageElement>('img[src]').forEach((image, index) => {
+      const url = image.getAttribute('src')?.trim()
+      if (!url || usedUrls.has(url)) return
+      candidates.push({ url, label: `Imagem ${index + 1} do conteúdo` })
+      usedUrls.add(url)
+    })
+
+    return candidates
+  }
+
+  function createSocialImageOption(
+    url: string,
+    label: string,
+    selected: boolean,
+    previewUrl?: string,
+  ) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'social-image-option'
+    button.classList.toggle('is-selected', selected)
+    button.dataset.socialImage = url
+    button.setAttribute('aria-pressed', String(selected))
+    button.title = label
+
+    if (previewUrl) {
+      const image = document.createElement('img')
+      image.src = previewUrl
+      image.alt = ''
+      image.loading = 'lazy'
+      image.referrerPolicy = 'no-referrer'
+      button.append(image)
+    } else {
+      const preview = document.createElement('span')
+      preview.className = 'social-image-option-preview'
+      preview.textContent = 'Imagem padrão'
+      button.append(preview)
+    }
+
+    const text = document.createElement('span')
+    text.className = 'social-image-option-label'
+    text.textContent = label
+    button.append(text)
+
+    const check = document.createElement('span')
+    check.className = 'social-image-option-check'
+    check.textContent = '✓'
+    check.setAttribute('aria-hidden', 'true')
+    button.append(check)
+
+    return button
+  }
+
+  function refreshSocialImageOptions() {
+    const candidates = getSocialImageCandidates()
+    let selectedImage = socialImageInput.value.trim()
+
+    if (selectedImage && !candidates.some(candidate => candidate.url === selectedImage)) {
+      socialImageInput.value = ''
+      selectedImage = ''
+    }
+
+    const automaticImage = candidates[0]
+
+    socialImageOptions.replaceChildren(
+      createSocialImageOption(
+        '',
+        'Automática',
+        !selectedImage,
+        automaticImage?.url,
+      ),
+      ...candidates.map(candidate =>
+        createSocialImageOption(
+          candidate.url,
+          candidate.label,
+          selectedImage === candidate.url,
+          candidate.url,
+        ),
+      ),
+    )
+
+    if (selectedImage) {
+      socialImageStatus.textContent =
+        'A imagem selecionada será usada na prévia do link após salvar o post.'
+    } else if (automaticImage?.label === 'Imagem de capa') {
+      socialImageStatus.textContent =
+        'Modo automático: será usada a imagem de capa. Se ela for removida, será usada a primeira imagem do conteúdo.'
+    } else if (automaticImage) {
+      socialImageStatus.textContent =
+        'Modo automático: será usada a primeira imagem encontrada no conteúdo.'
+    } else {
+      socialImageStatus.textContent =
+        'Modo automático: como o post ainda não tem imagens, será usada a imagem padrão do site.'
+    }
+  }
+
+  function scheduleSocialImageOptionsRefresh() {
+    window.clearTimeout(socialImageRefreshTimer)
+    socialImageRefreshTimer = window.setTimeout(refreshSocialImageOptions, 150)
+  }
+
+  socialImageOptions.addEventListener('click', event => {
+    const option = (event.target as HTMLElement).closest<HTMLButtonElement>(
+      '.social-image-option',
+    )
+    if (!option) return
+
+    socialImageInput.value = option.dataset.socialImage || ''
+    refreshSocialImageOptions()
+    saveDraft()
+  })
 
   function updateHeroImagePreview(url: string) {
     if (!url) {
@@ -1192,6 +1436,7 @@ const isEditing = !!post
 
   heroImageInput.addEventListener('change', () => {
     updateHeroImagePreview(heroImageInput.value.trim())
+    refreshSocialImageOptions()
   })
 
   heroImageFileInput.addEventListener('change', async () => {
@@ -1209,6 +1454,7 @@ const isEditing = !!post
 
       heroImageInput.value = blob.url
       updateHeroImagePreview(blob.url)
+      refreshSocialImageOptions()
       setUploadStatus(heroUploadStatus, 'Imagem enviada e pronta para salvar.', 'success')
       saveDraft()
     } catch (error) {
@@ -1235,6 +1481,7 @@ const isEditing = !!post
       title: titleInput.value,
       description: (document.getElementById('description') as HTMLInputElement).value,
       content: html, heroImage: (document.getElementById('heroImage') as HTMLInputElement).value,
+      socialImage: socialImageInput.value,
       authorName: (document.getElementById('authorName') as HTMLInputElement).value,
       published: (document.getElementById('published') as HTMLInputElement).checked,
       slug: (document.getElementById('slug') as HTMLInputElement)?.value || '',
@@ -1257,6 +1504,7 @@ const isEditing = !!post
     ;(document.getElementById('description') as HTMLInputElement).value = data.description || ''
     ;(document.getElementById('heroImage') as HTMLInputElement).value = data.heroImage || ''
     updateHeroImagePreview(data.heroImage || '')
+    socialImageInput.value = data.socialImage || ''
     ;(document.getElementById('authorName') as HTMLInputElement).value = data.authorName || ''
     ;(document.getElementById('published') as HTMLInputElement).checked = data.published || false
     if (data.content) editor.commands.setContent(data.content)
@@ -1264,10 +1512,12 @@ const isEditing = !!post
     if (slugInput && data.slug) slugInput.value = data.slug
     if (slugPreview) slugPreview.textContent = generateSlug(data.title) || '...'
     updateCounts()
+    refreshSocialImageOptions()
   }
 
   const autosaveInterval = setInterval(saveDraft, 30000)
   restoreDraft()
+  refreshSocialImageOptions()
 
   // ---- Submit ----
   form.addEventListener('submit', async e => {
@@ -1278,6 +1528,7 @@ const isEditing = !!post
       description: (document.getElementById('description') as HTMLInputElement).value,
       content: editor.getHTML(),
       heroImage: (document.getElementById('heroImage') as HTMLInputElement).value || null,
+      socialImage: socialImageInput.value || null,
       published: (document.getElementById('published') as HTMLInputElement).checked,
       authorName: authorName || undefined,
     }

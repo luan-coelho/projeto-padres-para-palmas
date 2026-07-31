@@ -10,10 +10,12 @@ interface Props {
   description: string
   canonicalURL?: string
   ogImage?: string
+  ogImageAlt?: string
+  ogType?: 'website' | 'article'
   jsonLd?: object[]
 }
 
-const { title, description, canonicalURL, ogImage, jsonLd } = Astro.props
+const { title, description, canonicalURL, ogImage, ogImageAlt, ogType, jsonLd } = Astro.props
 ---
 
 <!doctype html>
@@ -24,6 +26,8 @@ const { title, description, canonicalURL, ogImage, jsonLd } = Astro.props
       description={description}
       canonicalURL={canonicalURL}
       ogImage={ogImage}
+      ogImageAlt={ogImageAlt}
+      ogType={ogType}
       jsonLd={jsonLd}
     />
     <ClientRouter />

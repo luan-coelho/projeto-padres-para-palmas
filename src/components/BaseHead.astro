@@ -7,6 +7,8 @@ interface Props {
   description: string
   canonicalURL?: string
   ogImage?: string
+  ogImageAlt?: string
+  ogType?: 'website' | 'article'
   jsonLd?: object[]
 }
 const {
@@ -14,15 +16,20 @@ const {
   description,
   canonicalURL = SITE_URL,
   ogImage = logoColorida.src,
+  ogImageAlt = `${SITE_TITLE} - identidade visual`,
+  ogType = 'website',
   jsonLd = []
 } = Astro.props
+
+const absoluteOgImage = new URL(ogImage, SITE_URL).toString()
+const organizationLogo = new URL(logoColorida.src, SITE_URL).toString()
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: SITE_TITLE,
   url: SITE_URL,
-  logo: new URL(ogImage, SITE_URL).toString(),
+  logo: organizationLogo,
   sameAs: ['https://www.instagram.com/padresparapalmas']
 }
 
@@ -59,20 +66,22 @@ const allJsonLd = [organizationJsonLd, websiteJsonLd, ...jsonLd]
 <meta name="generator" content={Astro.generator} />
 
 <!-- Open Graph -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:locale" content="pt_BR" />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(ogImage, SITE_URL).toString()} />
-<meta property="og:image:alt" content={`${SITE_TITLE} - identidade visual`} />
+<meta property="og:image" content={absoluteOgImage} />
+<meta property="og:image:secure_url" content={absoluteOgImage} />
+<meta property="og:image:alt" content={ogImageAlt} />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(ogImage, SITE_URL).toString()} />
+<meta name="twitter:image" content={absoluteOgImage} />
+<meta name="twitter:image:alt" content={ogImageAlt} />
 
 <!-- Links -->
 <link rel="canonical" href={canonicalURL} />

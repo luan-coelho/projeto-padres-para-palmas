@@ -67,6 +67,7 @@ export const posts = pgTable('posts', {
   authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
   authorName: text('author_name').notNull().default('Projeto Padres para a Igreja de Palmas'),
   heroImage: text('hero_image'),
+  socialImage: text('social_image'),
   published: boolean('published').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

@@ -30,6 +30,17 @@ Os uploads aceitam JPG, PNG, WebP e AVIF com tamanho máximo de 5 MB. O token de
 leitura e escrita deve existir somente no servidor e nunca pode ser exposto em
 variáveis `PUBLIC_*`.
 
+No editor do blog, a imagem de compartilhamento pode ser escolhida entre a capa
+e as imagens inseridas no conteúdo. No modo automático, a aplicação usa a capa,
+depois a primeira imagem do conteúdo e, se o post não tiver imagens, a identidade
+visual padrão do site.
+
+Para aplicar novas migrações do banco configurado em `.env.local`, execute:
+
+```bash
+bun run db:migrate
+```
+
 # Building For Production
 
 To build this application for production:

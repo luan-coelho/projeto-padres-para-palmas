@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro'
 import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { desc } from 'drizzle-orm'
+import { isPostSocialImageAvailable } from '@/lib/post-images'
 
 function generateSlug(title: string): string {
   return title
@@ -38,6 +39,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const slug = generateSlug(body.title)
+  const heroImage = typeof body.heroImage === 'string' ? body.heroImage.trim() || null : null
+  const socialImage = typeof body.socialImage === 'string' ? body.socialImage.trim() || null : null
+
+  if (!isPostSocialImageAvailable({ socialImage, heroImage, content: body.content })) {
+    return new Response('A imagem de compartilhamento deve pertencer ao post', { status: 400 })
+  }
 
   const [newPost] = await db
     .insert(posts)
@@ -48,7 +55,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       content: body.content,
       authorId: locals.user.id,
       authorName: body.authorName || locals.user.name || 'Projeto Padres para a Igreja de Palmas',
-      heroImage: body.heroImage || null,
+      heroImage,
+      socialImage,
       published: body.published ?? false,
     })
     .returning()

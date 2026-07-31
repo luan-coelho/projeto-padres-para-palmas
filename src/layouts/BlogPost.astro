@@ -9,17 +9,19 @@ interface Props {
   updatedDate?: Date
   author: string
   heroImage?: string
+  socialImage?: string
 }
 
-const { title, description, pubDate, updatedDate, author, heroImage } = Astro.props
+const { title, description, pubDate, updatedDate, author, heroImage, socialImage } = Astro.props
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL).toString()
-const ogImage = heroImage ? new URL(heroImage, SITE_URL).toString() : undefined
+const ogImage = socialImage ? new URL(socialImage, SITE_URL).toString() : undefined
 
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: title,
   description,
+  ...(ogImage && { image: ogImage }),
   datePublished: pubDate.toISOString(),
   ...(updatedDate && { dateModified: updatedDate.toISOString() }),
   author: {
@@ -54,6 +56,8 @@ const breadcrumbJsonLd = {
   description={description}
   canonicalURL={canonicalURL}
   ogImage={ogImage}
+  ogImageAlt={`Imagem de compartilhamento do artigo: ${title}`}
+  ogType="article"
   jsonLd={[articleJsonLd, breadcrumbJsonLd]}
 >
   <article class="pt-28 pb-16">
@@ -62,7 +66,7 @@ const breadcrumbJsonLd = {
         <img
           src={heroImage}
           alt=""
-          class="mx-auto mb-8 max-h-96 w-full max-w-4xl rounded-xl object-cover"
+          class="mx-auto mb-8 max-h-96 w-full max-w-4xl rounded-xl object-contain"
         />
       )
     }

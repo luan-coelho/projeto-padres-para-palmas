@@ -5,6 +5,7 @@ import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import BlogPost from '@/layouts/BlogPost.astro'
+import { resolvePostSocialImage } from '@/lib/post-images'
 
 const { slug } = Astro.params
 
@@ -20,6 +21,8 @@ const [post] = await db
 if (!post) {
   return Astro.redirect('/404')
 }
+
+const socialImage = resolvePostSocialImage(post)
 ---
 
 <BlogPost
@@ -29,6 +32,7 @@ if (!post) {
   updatedDate={new Date(post.updatedAt)}
   author={post.authorName}
   heroImage={post.heroImage ?? undefined}
+  socialImage={socialImage}
 >
   <Fragment set:html={post.content} />
 </BlogPost>

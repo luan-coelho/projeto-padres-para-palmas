@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro'
 import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { isPostSocialImageAvailable } from '@/lib/post-images'
 
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   if (!locals.user) {
@@ -16,6 +17,12 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
   }
 
   const body = await request.json()
+  const heroImage = typeof body.heroImage === 'string' ? body.heroImage.trim() || null : null
+  const socialImage = typeof body.socialImage === 'string' ? body.socialImage.trim() || null : null
+
+  if (!isPostSocialImageAvailable({ socialImage, heroImage, content: body.content || '' })) {
+    return new Response('A imagem de compartilhamento deve pertencer ao post', { status: 400 })
+  }
 
   const [updated] = await db
     .update(posts)
@@ -25,7 +32,8 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
       description: body.description,
       content: body.content,
       authorName: body.authorName || undefined,
-      heroImage: body.heroImage || null,
+      heroImage,
+      socialImage,
       published: body.published ?? false,
       updatedAt: new Date(),
     })
