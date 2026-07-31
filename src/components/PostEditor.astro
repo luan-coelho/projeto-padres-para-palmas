@@ -1,4 +1,6 @@
 ---
+import type { PostAttachment } from '@/lib/post-attachments'
+
 interface Props {
   post?: {
     id: number
@@ -9,6 +11,7 @@ interface Props {
     authorName: string
     heroImage: string | null
     socialImage: string | null
+    attachments: PostAttachment[]
     published: boolean
   }
 }
@@ -328,6 +331,51 @@ const isEditing = !!post
       Carregando imagens disponíveis...
     </p>
   </div>
+
+  <!-- Materiais complementares -->
+  <div class="attachments-panel">
+    <div class="attachments-panel-header">
+      <div>
+        <label class="block text-sm font-medium">Materiais complementares</label>
+        <p class="text-grafite/60 mt-1 text-sm">
+          Adicione arquivos para consulta e download ao final da publicação.
+        </p>
+      </div>
+      <label for="attachment-files" class="image-upload-button">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+        </svg>
+        Adicionar arquivos
+      </label>
+      <input
+        type="file"
+        id="attachment-files"
+        class="sr-only"
+        multiple
+        accept=".pdf,.doc,.docx,image/jpeg,image/png,image/webp,image/avif,image/gif"
+      />
+    </div>
+    <p class="image-upload-help">
+      PDF, DOC, DOCX, JPG, PNG, WebP, AVIF ou GIF, até 20 MB por arquivo.
+    </p>
+    <progress id="attachments-progress" class="image-upload-progress" max="100" value="0" hidden>
+      0%
+    </progress>
+    <p id="attachments-status" class="image-upload-status" aria-live="polite"></p>
+    <div id="attachments-list" class="attachments-list"></div>
+  </div>
+  <script is:inline define:vars={{ initialAttachments: post?.attachments || [] }}>
+    window.__postInitialAttachments = initialAttachments
+  </script>
 
   <div class="flex items-center gap-2">
     <input type="checkbox" id="published" name="published" class="h-4 w-4 rounded" checked={post?.published || false} />
@@ -830,6 +878,119 @@ const isEditing = !!post
     color: #4b5563;
     font-size: 0.75rem;
   }
+  .attachments-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid #dbe4df;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    background: #f8fbf9;
+  }
+  .attachments-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .attachments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .attachments-empty {
+    border: 1px dashed #cbd5d1;
+    border-radius: 0.625rem;
+    padding: 1rem;
+    color: #6b7280;
+    background: rgba(255, 255, 255, 0.65);
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+  .attachment-editor-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.625rem;
+    padding: 0.75rem;
+    background: #fff;
+  }
+  .attachment-editor-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    color: #43745a;
+    background: #e8f2ec;
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+  .attachment-editor-fields { min-width: 0; }
+  .attachment-name-input {
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.375rem;
+    color: #1f2937;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .attachment-name-input:hover,
+  .attachment-name-input:focus {
+    border-color: #d1d5db;
+    background: #fff;
+    outline: none;
+  }
+  .attachment-editor-meta {
+    display: block;
+    padding: 0 0.375rem;
+    color: #6b7280;
+    font-size: 0.6875rem;
+  }
+  .attachment-editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .attachment-editor-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 0.375rem;
+    color: #6b7280;
+    background: transparent;
+    cursor: pointer;
+  }
+  .attachment-editor-action:hover {
+    color: #374151;
+    background: #f3f4f6;
+  }
+  .attachment-editor-action.is-destructive:hover {
+    color: #dc2626;
+    background: #fef2f2;
+  }
+  .attachment-editor-action:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  @media (max-width: 640px) {
+    .attachment-editor-item {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .attachment-editor-actions {
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+    }
+  }
   .dialog-footer {
     display: flex;
     justify-content: flex-end;
@@ -929,6 +1090,15 @@ const isEditing = !!post
   import Youtube from '@tiptap/extension-youtube'
   import CharacterCount from '@tiptap/extension-character-count'
   import Typography from '@tiptap/extension-typography'
+  import {
+    ALLOWED_ATTACHMENT_CONTENT_TYPES,
+    MAX_ATTACHMENTS_PER_POST,
+    MAX_ATTACHMENT_SIZE_IN_BYTES,
+    formatAttachmentSize,
+    getAttachmentTypeLabel,
+    type AttachmentContentType,
+    type PostAttachment,
+  } from '@/lib/post-attachments'
 
   const form = document.getElementById('post-form') as HTMLFormElement
   const postSubmitButton = document.getElementById('post-submit') as HTMLButtonElement
@@ -942,6 +1112,23 @@ const isEditing = !!post
   const mode = form.dataset.mode as 'create' | 'edit'
   const draftKey = mode === 'edit' ? `draft-${postId}` : 'draft-novo'
   const initialContent = (window as any).__editorInitialContent || ''
+  const initialAttachments =
+    (
+      window as typeof window & {
+        __postInitialAttachments?: PostAttachment[]
+      }
+    ).__postInitialAttachments || []
+  let activePostUploads = 0
+
+  function beginPostUpload() {
+    activePostUploads += 1
+    postSubmitButton.disabled = true
+  }
+
+  function endPostUpload() {
+    activePostUploads = Math.max(0, activePostUploads - 1)
+    postSubmitButton.disabled = activePostUploads > 0
+  }
 
   const MAX_IMAGE_SIZE_IN_BYTES = 5 * 1024 * 1024
   const IMAGE_EXTENSION_BY_TYPE: Record<string, string> = {
@@ -949,6 +1136,27 @@ const isEditing = !!post
     'image/png': 'png',
     'image/webp': 'webp',
     'image/avif': 'avif',
+  }
+  const ATTACHMENT_EXTENSION_BY_TYPE: Record<AttachmentContentType, string> = {
+    'application/pdf': 'pdf',
+    'application/msword': 'doc',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/avif': 'avif',
+    'image/gif': 'gif',
+  }
+  const ATTACHMENT_CONTENT_TYPE_BY_EXTENSION: Record<string, AttachmentContentType> = {
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    avif: 'image/avif',
+    gif: 'image/gif',
   }
 
   type ImageDestination = 'content' | 'covers'
@@ -1005,8 +1213,286 @@ const isEditing = !!post
 
   function getUploadErrorMessage(error: unknown) {
     if (error instanceof Error && error.message) return error.message
-    return 'Não foi possível enviar a imagem. Tente novamente.'
+    return 'Não foi possível enviar o arquivo. Tente novamente.'
   }
+
+  // ---- Complementary materials ----
+  const attachmentFilesInput = document.getElementById('attachment-files') as HTMLInputElement
+  const attachmentsProgress = document.getElementById(
+    'attachments-progress',
+  ) as HTMLProgressElement
+  const attachmentsStatus = document.getElementById('attachments-status')!
+  const attachmentsList = document.getElementById('attachments-list')!
+  const allowedAttachmentContentTypes = new Set<string>(ALLOWED_ATTACHMENT_CONTENT_TYPES)
+  let postAttachments: PostAttachment[] = initialAttachments.map(attachment => ({
+    ...attachment,
+  }))
+
+  function getAttachmentContentType(file: File): AttachmentContentType | undefined {
+    if (allowedAttachmentContentTypes.has(file.type)) {
+      return file.type as AttachmentContentType
+    }
+
+    const extension = file.name.split('.').pop()?.toLowerCase() || ''
+    return ATTACHMENT_CONTENT_TYPE_BY_EXTENSION[extension]
+  }
+
+  function validateAttachmentFile(file: File) {
+    const contentType = getAttachmentContentType(file)
+
+    if (!contentType) {
+      throw new Error(`Formato não permitido em "${file.name}".`)
+    }
+
+    if (file.size === 0) {
+      throw new Error(`O arquivo "${file.name}" está vazio.`)
+    }
+
+    if (file.size > MAX_ATTACHMENT_SIZE_IN_BYTES) {
+      throw new Error(`"${file.name}" deve ter no máximo 20 MB.`)
+    }
+
+    return contentType
+  }
+
+  function buildAttachmentPathname(file: File, contentType: AttachmentContentType) {
+    const baseName =
+      file.name
+        .replace(/\.[^.]+$/, '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '')
+        .slice(0, 120) || 'arquivo'
+
+    return `blog/attachments/${baseName}.${ATTACHMENT_EXTENSION_BY_TYPE[contentType]}`
+  }
+
+  async function uploadPostAttachment(
+    file: File,
+    contentType: AttachmentContentType,
+    onProgress: (percentage: number) => void,
+  ): Promise<PostAttachment> {
+    const blob = await upload(buildAttachmentPathname(file, contentType), file, {
+      access: 'public',
+      handleUploadUrl: '/api/uploads/attachments',
+      contentType,
+      onUploadProgress: progress => onProgress(progress.percentage),
+    })
+    const cleanedName = file.name
+      .replace(/[\u0000-\u001f\u007f]/g, '')
+      .trim()
+      .slice(0, 160)
+
+    return {
+      name: cleanedName || `Arquivo.${ATTACHMENT_EXTENSION_BY_TYPE[contentType]}`,
+      url: blob.url,
+      downloadUrl: blob.downloadUrl,
+      contentType,
+      size: file.size,
+    }
+  }
+
+  function renderPostAttachments() {
+    attachmentsList.replaceChildren()
+
+    if (postAttachments.length === 0) {
+      const empty = document.createElement('p')
+      empty.className = 'attachments-empty'
+      empty.textContent = 'Nenhum material complementar adicionado.'
+      attachmentsList.append(empty)
+      return
+    }
+
+    postAttachments.forEach((attachment, index) => {
+      const item = document.createElement('div')
+      item.className = 'attachment-editor-item'
+
+      const icon = document.createElement('span')
+      icon.className = 'attachment-editor-icon'
+      icon.textContent = attachment.contentType.startsWith('image/')
+        ? 'IMG'
+        : attachment.contentType === 'application/pdf'
+          ? 'PDF'
+          : 'WORD'
+
+      const fields = document.createElement('div')
+      fields.className = 'attachment-editor-fields'
+
+      const nameInput = document.createElement('input')
+      nameInput.type = 'text'
+      nameInput.className = 'attachment-name-input'
+      nameInput.value = attachment.name
+      nameInput.maxLength = 160
+      nameInput.required = true
+      nameInput.setAttribute('aria-label', `Nome do material ${index + 1}`)
+      nameInput.addEventListener('input', () => {
+        postAttachments[index].name = nameInput.value
+        saveDraft()
+      })
+
+      const meta = document.createElement('span')
+      meta.className = 'attachment-editor-meta'
+      meta.textContent = `${getAttachmentTypeLabel(attachment.contentType)} · ${formatAttachmentSize(attachment.size)}`
+
+      fields.append(nameInput, meta)
+
+      const actions = document.createElement('div')
+      actions.className = 'attachment-editor-actions'
+
+      const openLink = document.createElement('a')
+      openLink.className = 'attachment-editor-action'
+      openLink.href = attachment.url
+      openLink.target = '_blank'
+      openLink.rel = 'noopener noreferrer'
+      openLink.textContent = '↗'
+      openLink.title = 'Abrir arquivo'
+      openLink.setAttribute('aria-label', `Abrir ${attachment.name}`)
+
+      const moveUp = document.createElement('button')
+      moveUp.type = 'button'
+      moveUp.className = 'attachment-editor-action'
+      moveUp.textContent = '↑'
+      moveUp.title = 'Mover para cima'
+      moveUp.disabled = index === 0
+      moveUp.dataset.attachmentAction = 'up'
+      moveUp.dataset.attachmentIndex = String(index)
+
+      const moveDown = document.createElement('button')
+      moveDown.type = 'button'
+      moveDown.className = 'attachment-editor-action'
+      moveDown.textContent = '↓'
+      moveDown.title = 'Mover para baixo'
+      moveDown.disabled = index === postAttachments.length - 1
+      moveDown.dataset.attachmentAction = 'down'
+      moveDown.dataset.attachmentIndex = String(index)
+
+      const remove = document.createElement('button')
+      remove.type = 'button'
+      remove.className = 'attachment-editor-action is-destructive'
+      remove.textContent = '×'
+      remove.title = 'Remover material'
+      remove.dataset.attachmentAction = 'remove'
+      remove.dataset.attachmentIndex = String(index)
+
+      actions.append(openLink, moveUp, moveDown, remove)
+      item.append(icon, fields, actions)
+      attachmentsList.append(item)
+    })
+  }
+
+  attachmentsList.addEventListener('click', event => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
+      '[data-attachment-action]',
+    )
+    if (!button) return
+
+    const index = Number(button.dataset.attachmentIndex)
+    const action = button.dataset.attachmentAction
+    if (!Number.isInteger(index) || !postAttachments[index]) return
+
+    if (action === 'remove') {
+      postAttachments.splice(index, 1)
+    } else if (action === 'up' && index > 0) {
+      ;[postAttachments[index - 1], postAttachments[index]] = [
+        postAttachments[index],
+        postAttachments[index - 1],
+      ]
+    } else if (action === 'down' && index < postAttachments.length - 1) {
+      ;[postAttachments[index], postAttachments[index + 1]] = [
+        postAttachments[index + 1],
+        postAttachments[index],
+      ]
+    }
+
+    renderPostAttachments()
+    saveDraft()
+  })
+
+  attachmentFilesInput.addEventListener('change', async () => {
+    const files = Array.from(attachmentFilesInput.files || [])
+    if (files.length === 0) return
+
+    if (postAttachments.length + files.length > MAX_ATTACHMENTS_PER_POST) {
+      setUploadStatus(
+        attachmentsStatus,
+        `Cada post pode ter no máximo ${MAX_ATTACHMENTS_PER_POST} materiais.`,
+        'error',
+      )
+      attachmentFilesInput.value = ''
+      return
+    }
+
+    let preparedFiles: Array<{ file: File; contentType: AttachmentContentType }>
+
+    try {
+      preparedFiles = files.map(file => ({
+        file,
+        contentType: validateAttachmentFile(file),
+      }))
+    } catch (error) {
+      setUploadStatus(attachmentsStatus, getUploadErrorMessage(error), 'error')
+      attachmentFilesInput.value = ''
+      return
+    }
+
+    beginPostUpload()
+    attachmentFilesInput.disabled = true
+    attachmentsProgress.hidden = false
+    attachmentsProgress.value = 0
+    let failedUploads = 0
+
+    try {
+      for (const [index, prepared] of preparedFiles.entries()) {
+        setUploadStatus(
+          attachmentsStatus,
+          `Enviando ${index + 1} de ${preparedFiles.length}: ${prepared.file.name}`,
+        )
+
+        try {
+          const attachment = await uploadPostAttachment(
+            prepared.file,
+            prepared.contentType,
+            percentage => {
+              const batchPercentage =
+                ((index + Math.max(0, Math.min(100, percentage)) / 100) /
+                  preparedFiles.length) *
+                100
+              attachmentsProgress.value = batchPercentage
+              attachmentsProgress.textContent = `${Math.round(batchPercentage)}%`
+            },
+          )
+          postAttachments.push(attachment)
+          renderPostAttachments()
+          saveDraft()
+        } catch {
+          failedUploads += 1
+        }
+      }
+
+      if (failedUploads > 0) {
+        setUploadStatus(
+          attachmentsStatus,
+          `${failedUploads} arquivo(s) não puderam ser enviados. Tente novamente.`,
+          'error',
+        )
+      } else {
+        setUploadStatus(
+          attachmentsStatus,
+          `${preparedFiles.length} arquivo(s) adicionado(s). Salve o post para publicar.`,
+          'success',
+        )
+      }
+    } finally {
+      attachmentFilesInput.value = ''
+      attachmentFilesInput.disabled = false
+      attachmentsProgress.hidden = true
+      endPostUpload()
+    }
+  })
+
+  renderPostAttachments()
 
   // ---- Editor ----
   const editor = new Editor({
@@ -1444,7 +1930,7 @@ const isEditing = !!post
     if (!file) return
 
     heroImageFileInput.disabled = true
-    postSubmitButton.disabled = true
+    beginPostUpload()
     setUploadStatus(heroUploadStatus, 'Preparando envio...')
 
     try {
@@ -1462,7 +1948,7 @@ const isEditing = !!post
     } finally {
       heroImageFileInput.value = ''
       heroImageFileInput.disabled = false
-      postSubmitButton.disabled = false
+      endPostUpload()
     }
   })
 
@@ -1482,6 +1968,7 @@ const isEditing = !!post
       description: (document.getElementById('description') as HTMLInputElement).value,
       content: html, heroImage: (document.getElementById('heroImage') as HTMLInputElement).value,
       socialImage: socialImageInput.value,
+      attachments: postAttachments,
       authorName: (document.getElementById('authorName') as HTMLInputElement).value,
       published: (document.getElementById('published') as HTMLInputElement).checked,
       slug: (document.getElementById('slug') as HTMLInputElement)?.value || '',
@@ -1505,6 +1992,10 @@ const isEditing = !!post
     ;(document.getElementById('heroImage') as HTMLInputElement).value = data.heroImage || ''
     updateHeroImagePreview(data.heroImage || '')
     socialImageInput.value = data.socialImage || ''
+    postAttachments = Array.isArray(data.attachments)
+      ? data.attachments.map((attachment: PostAttachment) => ({ ...attachment }))
+      : []
+    renderPostAttachments()
     ;(document.getElementById('authorName') as HTMLInputElement).value = data.authorName || ''
     ;(document.getElementById('published') as HTMLInputElement).checked = data.published || false
     if (data.content) editor.commands.setContent(data.content)
@@ -1529,6 +2020,7 @@ const isEditing = !!post
       content: editor.getHTML(),
       heroImage: (document.getElementById('heroImage') as HTMLInputElement).value || null,
       socialImage: socialImageInput.value || null,
+      attachments: postAttachments,
       published: (document.getElementById('published') as HTMLInputElement).checked,
       authorName: authorName || undefined,
     }

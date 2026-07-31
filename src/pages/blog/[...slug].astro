@@ -33,6 +33,7 @@ const socialImage = resolvePostSocialImage(post)
   author={post.authorName}
   heroImage={post.heroImage ?? undefined}
   socialImage={socialImage}
+  attachments={post.attachments}
 >
   <Fragment set:html={post.content} />
 </BlogPost>

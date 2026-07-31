@@ -35,6 +35,10 @@ e as imagens inseridas no conteúdo. No modo automático, a aplicação usa a ca
 depois a primeira imagem do conteúdo e, se o post não tiver imagens, a identidade
 visual padrão do site.
 
+Cada post também pode ter até 12 **materiais complementares**, exibidos após o
+texto com opções para abrir e baixar. São aceitos PDF, DOC, DOCX, JPG, PNG, WebP,
+AVIF e GIF, com limite de 20 MB por arquivo.
+
 Para aplicar novas migrações do banco configurado em `.env.local`, execute:
 
 ```bash

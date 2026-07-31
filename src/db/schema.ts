@@ -1,4 +1,5 @@
-import { pgTable, text, serial, boolean, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, boolean, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import type { PostAttachment } from '../lib/post-attachments'
 
 // ============================================================
 // Better-Auth tables (user, session, account, verification)
@@ -68,6 +69,7 @@ export const posts = pgTable('posts', {
   authorName: text('author_name').notNull().default('Projeto Padres para a Igreja de Palmas'),
   heroImage: text('hero_image'),
   socialImage: text('social_image'),
+  attachments: jsonb('attachments').$type<PostAttachment[]>().notNull().default([]),
   published: boolean('published').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

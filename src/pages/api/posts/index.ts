@@ -5,6 +5,8 @@ import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { desc } from 'drizzle-orm'
 import { isPostSocialImageAvailable } from '@/lib/post-images'
+import { parsePostAttachments } from '@/lib/post-attachments'
+import { verifyPostAttachmentBlobs } from '@/lib/post-attachments-server'
 
 function generateSlug(title: string): string {
   return title
@@ -41,9 +43,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const slug = generateSlug(body.title)
   const heroImage = typeof body.heroImage === 'string' ? body.heroImage.trim() || null : null
   const socialImage = typeof body.socialImage === 'string' ? body.socialImage.trim() || null : null
+  const parsedAttachments = parsePostAttachments(body.attachments)
 
   if (!isPostSocialImageAvailable({ socialImage, heroImage, content: body.content })) {
     return new Response('A imagem de compartilhamento deve pertencer ao post', { status: 400 })
+  }
+
+  if (!parsedAttachments.ok) {
+    return new Response(parsedAttachments.error, { status: 400 })
+  }
+
+  const verifiedAttachments = await verifyPostAttachmentBlobs(
+    parsedAttachments.attachments,
+    import.meta.env.BLOB_READ_WRITE_TOKEN,
+  )
+  if (!verifiedAttachments.ok) {
+    return new Response(verifiedAttachments.error, { status: 400 })
   }
 
   const [newPost] = await db
@@ -57,6 +72,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       authorName: body.authorName || locals.user.name || 'Projeto Padres para a Igreja de Palmas',
       heroImage,
       socialImage,
+      attachments: verifiedAttachments.attachments,
       published: body.published ?? false,
     })
     .returning()
