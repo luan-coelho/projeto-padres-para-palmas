@@ -4,7 +4,11 @@ import type { APIRoute } from 'astro'
 import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { isPostSocialImageAvailable } from '@/lib/post-images'
+import {
+  DEFAULT_POST_IMAGE_POSITION,
+  isPostImagePosition,
+  isPostSocialImageAvailable,
+} from '@/lib/post-images'
 import { parsePostAttachments } from '@/lib/post-attachments'
 import { verifyPostAttachmentBlobs } from '@/lib/post-attachments-server'
 
@@ -20,8 +24,14 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
   const body = await request.json()
   const heroImage = typeof body.heroImage === 'string' ? body.heroImage.trim() || null : null
+  const heroImagePositionX = body.heroImagePositionX ?? DEFAULT_POST_IMAGE_POSITION
+  const heroImagePositionY = body.heroImagePositionY ?? DEFAULT_POST_IMAGE_POSITION
   const socialImage = typeof body.socialImage === 'string' ? body.socialImage.trim() || null : null
   const parsedAttachments = parsePostAttachments(body.attachments)
+
+  if (!isPostImagePosition(heroImagePositionX) || !isPostImagePosition(heroImagePositionY)) {
+    return new Response('A posição da imagem de capa deve estar entre 0 e 100', { status: 400 })
+  }
 
   if (!isPostSocialImageAvailable({ socialImage, heroImage, content: body.content || '' })) {
     return new Response('A imagem de compartilhamento deve pertencer ao post', { status: 400 })
@@ -48,6 +58,8 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
       content: body.content,
       authorName: body.authorName || undefined,
       heroImage,
+      heroImagePositionX,
+      heroImagePositionY,
       socialImage,
       attachments: verifiedAttachments.attachments,
       published: body.published ?? false,

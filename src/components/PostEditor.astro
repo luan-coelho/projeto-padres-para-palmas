@@ -10,6 +10,8 @@ interface Props {
     content: string
     authorName: string
     heroImage: string | null
+    heroImagePositionX: number
+    heroImagePositionY: number
     socialImage: string | null
     attachments: PostAttachment[]
     published: boolean
@@ -18,6 +20,8 @@ interface Props {
 
 const { post } = Astro.props
 const isEditing = !!post
+const heroImagePositionX = post?.heroImagePositionX ?? 50
+const heroImagePositionY = post?.heroImagePositionY ?? 50
 ---
 
 <form
@@ -310,7 +314,28 @@ const isEditing = !!post
         id="hero-image-preview-img"
         src={post?.heroImage || ''}
         alt="Prévia da imagem de capa"
+        draggable="false"
+        style={`object-position: ${heroImagePositionX}% ${heroImagePositionY}%`}
       />
+      <span
+        id="hero-image-focus-marker"
+        class="hero-image-focus-marker"
+        style={`left: ${heroImagePositionX}%; top: ${heroImagePositionY}%`}
+        aria-hidden="true"
+      ></span>
+    </div>
+    <div id="hero-image-position-controls" class:list={['hero-image-position-controls', { hidden: !post?.heroImage }]}>
+      <p class="image-upload-help">
+        Clique na prévia para escolher o ponto principal da capa ou ajuste pelos controles.
+      </p>
+      <label for="hero-image-position-x">
+        Horizontal <output id="hero-image-position-x-output">{heroImagePositionX}%</output>
+      </label>
+      <input type="range" id="hero-image-position-x" min="0" max="100" step="1" value={heroImagePositionX} />
+      <label for="hero-image-position-y">
+        Vertical <output id="hero-image-position-y-output">{heroImagePositionY}%</output>
+      </label>
+      <input type="range" id="hero-image-position-y" min="0" max="100" step="1" value={heroImagePositionY} />
     </div>
   </div>
 
@@ -835,19 +860,59 @@ const isEditing = !!post
   .image-upload-status.is-success,
   .image-upload-help.is-success { color: #15803d; }
   .hero-image-preview {
+    position: relative;
     width: min(100%, 24rem);
+    aspect-ratio: 16 / 9;
     margin-top: 0.75rem;
     overflow: hidden;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     background: #f9fafb;
+    cursor: crosshair;
   }
   .hero-image-preview.hidden { display: none; }
   .hero-image-preview img {
     display: block;
     width: 100%;
-    max-height: 12rem;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero-image-focus-marker {
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid white;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-image-position-controls {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    width: min(100%, 24rem);
+    margin-top: 0.75rem;
+  }
+  .hero-image-position-controls.hidden { display: none; }
+  .hero-image-position-controls .image-upload-help { grid-column: 1 / -1; }
+  .hero-image-position-controls label {
+    display: flex;
+    min-width: 7rem;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .hero-image-position-controls output {
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-image-position-controls input[type='range'] {
+    width: 100%;
+    accent-color: #62a884;
   }
   .social-image-panel {
     display: flex;
@@ -1902,6 +1967,12 @@ const isEditing = !!post
   const heroUploadStatus = document.getElementById('hero-upload-status')!
   const heroImagePreview = document.getElementById('hero-image-preview')!
   const heroImagePreviewImg = document.getElementById('hero-image-preview-img') as HTMLImageElement
+  const heroImageFocusMarker = document.getElementById('hero-image-focus-marker')!
+  const heroImagePositionControls = document.getElementById('hero-image-position-controls')!
+  const heroImagePositionXInput = document.getElementById('hero-image-position-x') as HTMLInputElement
+  const heroImagePositionYInput = document.getElementById('hero-image-position-y') as HTMLInputElement
+  const heroImagePositionXOutput = document.getElementById('hero-image-position-x-output') as HTMLOutputElement
+  const heroImagePositionYOutput = document.getElementById('hero-image-position-y-output') as HTMLOutputElement
   const socialImageInput = document.getElementById('socialImage') as HTMLInputElement
   const socialImageOptions = document.getElementById('social-image-options')!
   const socialImageStatus = document.getElementById('social-image-status')!
@@ -2035,20 +2106,55 @@ const isEditing = !!post
     saveDraft()
   })
 
-  function updateHeroImagePreview(url: string) {
+  function setHeroImagePosition(x: number, y: number, persist = false) {
+    const normalizedX = Number.isFinite(x) ? Math.min(100, Math.max(0, Math.round(x))) : 50
+    const normalizedY = Number.isFinite(y) ? Math.min(100, Math.max(0, Math.round(y))) : 50
+
+    heroImagePositionXInput.value = String(normalizedX)
+    heroImagePositionYInput.value = String(normalizedY)
+    heroImagePositionXOutput.value = `${normalizedX}%`
+    heroImagePositionYOutput.value = `${normalizedY}%`
+    heroImagePreviewImg.style.objectPosition = `${normalizedX}% ${normalizedY}%`
+    heroImageFocusMarker.style.left = `${normalizedX}%`
+    heroImageFocusMarker.style.top = `${normalizedY}%`
+    if (persist) saveDraft()
+  }
+
+  function updateHeroImagePreview(url: string, resetPosition = false) {
+    if (resetPosition) setHeroImagePosition(50, 50)
+
     if (!url) {
       heroImagePreview.classList.add('hidden')
+      heroImagePositionControls.classList.add('hidden')
       heroImagePreviewImg.removeAttribute('src')
       return
     }
 
     heroImagePreviewImg.src = url
     heroImagePreview.classList.remove('hidden')
+    heroImagePositionControls.classList.remove('hidden')
   }
 
   heroImageInput.addEventListener('change', () => {
-    updateHeroImagePreview(heroImageInput.value.trim())
+    updateHeroImagePreview(heroImageInput.value.trim(), true)
     refreshSocialImageOptions()
+    saveDraft()
+  })
+
+  heroImagePreview.addEventListener('click', event => {
+    const bounds = heroImagePreview.getBoundingClientRect()
+    setHeroImagePosition(
+      ((event.clientX - bounds.left) / bounds.width) * 100,
+      ((event.clientY - bounds.top) / bounds.height) * 100,
+      true,
+    )
+  })
+
+  heroImagePositionXInput.addEventListener('input', () => {
+    setHeroImagePosition(Number(heroImagePositionXInput.value), Number(heroImagePositionYInput.value), true)
+  })
+  heroImagePositionYInput.addEventListener('input', () => {
+    setHeroImagePosition(Number(heroImagePositionXInput.value), Number(heroImagePositionYInput.value), true)
   })
 
   heroImageFileInput.addEventListener('change', async () => {
@@ -2065,7 +2171,7 @@ const isEditing = !!post
       })
 
       heroImageInput.value = blob.url
-      updateHeroImagePreview(blob.url)
+      updateHeroImagePreview(blob.url, true)
       refreshSocialImageOptions()
       setUploadStatus(heroUploadStatus, 'Imagem enviada e pronta para salvar.', 'success')
       saveDraft()
@@ -2093,6 +2199,8 @@ const isEditing = !!post
       title: titleInput.value,
       description: (document.getElementById('description') as HTMLInputElement).value,
       content: html, heroImage: (document.getElementById('heroImage') as HTMLInputElement).value,
+      heroImagePositionX: Number(heroImagePositionXInput.value),
+      heroImagePositionY: Number(heroImagePositionYInput.value),
       socialImage: socialImageInput.value,
       attachments: postAttachments,
       authorName: (document.getElementById('authorName') as HTMLInputElement).value,
@@ -2116,6 +2224,7 @@ const isEditing = !!post
     titleInput.value = data.title || ''
     ;(document.getElementById('description') as HTMLInputElement).value = data.description || ''
     ;(document.getElementById('heroImage') as HTMLInputElement).value = data.heroImage || ''
+    setHeroImagePosition(Number(data.heroImagePositionX), Number(data.heroImagePositionY))
     updateHeroImagePreview(data.heroImage || '')
     socialImageInput.value = data.socialImage || ''
     postAttachments = Array.isArray(data.attachments)
@@ -2145,6 +2254,8 @@ const isEditing = !!post
       description: (document.getElementById('description') as HTMLInputElement).value,
       content: editor.getHTML(),
       heroImage: (document.getElementById('heroImage') as HTMLInputElement).value || null,
+      heroImagePositionX: Number(heroImagePositionXInput.value),
+      heroImagePositionY: Number(heroImagePositionYInput.value),
       socialImage: socialImageInput.value || null,
       attachments: postAttachments,
       published: (document.getElementById('published') as HTMLInputElement).checked,

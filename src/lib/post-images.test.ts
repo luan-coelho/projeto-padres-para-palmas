@@ -1,6 +1,20 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { getContentImages, isPostSocialImageAvailable } from './post-images.ts'
+import {
+  getContentImages,
+  isPostImagePosition,
+  isPostSocialImageAvailable,
+} from './post-images.ts'
+
+test('validates cover image positions', () => {
+  assert.equal(isPostImagePosition(0), true)
+  assert.equal(isPostImagePosition(50), true)
+  assert.equal(isPostImagePosition(100), true)
+  assert.equal(isPostImagePosition(-1), false)
+  assert.equal(isPostImagePosition(101), false)
+  assert.equal(isPostImagePosition(50.5), false)
+  assert.equal(isPostImagePosition('50'), false)
+})
 
 test('finds legacy and captioned post images in order', () => {
   const content = `

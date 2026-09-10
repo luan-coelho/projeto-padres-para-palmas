@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, boolean, timestamp, jsonb, smallint } from 'drizzle-orm/pg-core'
 import type { PostAttachment } from '../lib/post-attachments'
 
 // ============================================================
@@ -68,6 +68,8 @@ export const posts = pgTable('posts', {
   authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
   authorName: text('author_name').notNull().default('Projeto Padres para a Igreja de Palmas'),
   heroImage: text('hero_image'),
+  heroImagePositionX: smallint('hero_image_position_x').notNull().default(50),
+  heroImagePositionY: smallint('hero_image_position_y').notNull().default(50),
   socialImage: text('social_image'),
   attachments: jsonb('attachments').$type<PostAttachment[]>().notNull().default([]),
   published: boolean('published').notNull().default(false),

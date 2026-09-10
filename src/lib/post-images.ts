@@ -4,6 +4,12 @@ interface PostImages {
   content: string
 }
 
+export const DEFAULT_POST_IMAGE_POSITION = 50
+
+export function isPostImagePosition(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 100
+}
+
 const IMAGE_SRC_PATTERN =
   /<img\b[^>]*\bsrc\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/gi
 
