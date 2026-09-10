@@ -4,15 +4,8 @@ import { db } from '@/db'
 import { allowedEmails } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
-const PRERENDERED_ROUTES = ['/linktree', '/404']
-
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Skip auth for prerendered static pages
-  if (PRERENDERED_ROUTES.some(route => context.url.pathname.startsWith(route))) {
-    context.locals.user = null
-    context.locals.session = null
-    return next()
-  }
+  if (context.isPrerendered) return next()
 
   const session = await auth.api.getSession({
     headers: context.request.headers

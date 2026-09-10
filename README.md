@@ -45,6 +45,12 @@ Para aplicar novas migrações do banco configurado em `.env.local`, execute:
 bun run db:migrate
 ```
 
+## Publicação dos posts
+
+A página inicial, a listagem do blog e os posts publicados são gerados durante o
+build. Depois de criar, editar, publicar, despublicar ou excluir um post, inicie
+manualmente um novo deploy na Vercel para atualizar o conteúdo público.
+
 # Building For Production
 
 To build this application for production:

@@ -220,6 +220,13 @@ const isEditing = !!post
         <button type="button" data-img-width="320" class="image-toolbar-btn">Medio</button>
         <button type="button" data-img-width="480" class="image-toolbar-btn">Grande</button>
         <button type="button" data-img-width="" class="image-toolbar-btn">Original</button>
+        <span class="image-toolbar-divider" aria-hidden="true"></span>
+        <span class="image-toolbar-label">Alinhamento:</span>
+        <button type="button" data-img-align="left" class="image-toolbar-btn">Esquerda</button>
+        <button type="button" data-img-align="center" class="image-toolbar-btn">Centro</button>
+        <button type="button" data-img-align="right" class="image-toolbar-btn">Direita</button>
+        <span class="image-toolbar-divider" aria-hidden="true"></span>
+        <button type="button" data-img-caption class="image-toolbar-btn">Legenda</button>
       </div>
 
       <!-- Status bar -->
@@ -446,15 +453,46 @@ const isEditing = !!post
       <input type="url" id="dialog-image-url" placeholder="https://exemplo.com/imagem.jpg" class="dialog-input" />
     </div>
     <div>
-      <label for="dialog-image-alt" class="mb-1 block text-sm font-medium">
-        Descricao <span class="text-grafite/50 font-normal">(opcional)</span>
+      <label for="dialog-image-caption" class="mb-1 block text-sm font-medium">
+        Legenda da imagem <span class="text-grafite/50 font-normal">(opcional)</span>
       </label>
-      <input type="text" id="dialog-image-alt" placeholder="Descricao da imagem" class="dialog-input" />
+      <input type="text" id="dialog-image-caption" maxlength="300" placeholder="Texto exibido abaixo da imagem" class="dialog-input" />
+      <p class="image-upload-help">A legenda também será usada como texto alternativo.</p>
+    </div>
+    <div>
+      <label for="dialog-image-align" class="mb-1 block text-sm font-medium">Alinhamento</label>
+      <select id="dialog-image-align" class="dialog-input">
+        <option value="left">Esquerda</option>
+        <option value="center" selected>Centro</option>
+        <option value="right">Direita</option>
+      </select>
     </div>
     <p id="dialog-image-status" class="image-upload-status" aria-live="polite"></p>
     <div class="dialog-footer">
       <button type="button" class="dialog-cancel">Cancelar</button>
       <button type="submit" id="dialog-image-submit" class="dialog-submit">Inserir imagem</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dialog-image-caption-edit" class="editor-dialog">
+  <div class="dialog-header">
+    <h3 class="font-display text-base font-bold">Editar legenda</h3>
+    <button type="button" class="dialog-close" aria-label="Fechar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <form id="image-caption-edit-form" class="dialog-body">
+    <div>
+      <label for="image-caption-edit-input" class="mb-1 block text-sm font-medium">
+        Legenda da imagem <span class="text-grafite/50 font-normal">(opcional)</span>
+      </label>
+      <input type="text" id="image-caption-edit-input" maxlength="300" placeholder="Texto exibido abaixo da imagem" class="dialog-input" />
+      <p class="image-upload-help">A legenda também será usada como texto alternativo.</p>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="dialog-cancel">Cancelar</button>
+      <button type="submit" class="dialog-submit">Salvar legenda</button>
     </div>
   </form>
 </dialog>
@@ -567,6 +605,20 @@ const isEditing = !!post
     max-width: 100%; border-radius: 0.75rem; margin: 1.5em 0;
     display: block; cursor: pointer; transition: outline 0.15s;
   }
+  .editor-content .tiptap figure[data-post-image] {
+    width: fit-content; max-width: 100%; margin: 1.5em 0;
+  }
+  .editor-content .tiptap figure[data-post-image][data-align='center'] {
+    margin-right: auto; margin-left: auto;
+  }
+  .editor-content .tiptap figure[data-post-image][data-align='right'] {
+    margin-right: 0; margin-left: auto;
+  }
+  .editor-content .tiptap figure[data-post-image] img { margin: 0; }
+  .editor-content .tiptap figure[data-post-image] figcaption {
+    margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem; line-height: 1.4;
+    text-align: center;
+  }
   .editor-content .tiptap .ProseMirror-selectednode {
     outline: 2px solid #00aeef; outline-offset: 3px; border-radius: 0.75rem;
   }
@@ -578,11 +630,12 @@ const isEditing = !!post
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     position: fixed; z-index: 60;
     transform: translateX(-50%);
-    white-space: nowrap;
+    width: max-content; max-width: calc(100vw - 1rem); flex-wrap: wrap; justify-content: center;
     pointer-events: auto;
   }
   .image-toolbar.hidden { display: none; }
   .image-toolbar-label { font-size: 0.75rem; color: #9ca3af; }
+  .image-toolbar-divider { width: 1px; height: 1.25rem; background: #4b5563; }
   .image-toolbar-btn {
     font-size: 0.75rem; color: #e5e7eb; background: transparent; border: 1px solid #374151;
     border-radius: 0.25rem; padding: 0.25rem 0.5rem; cursor: pointer; transition: all 0.15s;
@@ -1058,13 +1111,20 @@ const isEditing = !!post
 
 <script>
   import { upload } from '@vercel/blob/client'
-  import { Editor } from '@tiptap/core'
+  import { Editor, mergeAttributes } from '@tiptap/core'
   import StarterKit from '@tiptap/starter-kit'
   import Link from '@tiptap/extension-link'
   import Image from '@tiptap/extension-image'
   import Underline from '@tiptap/extension-underline'
 
-  // Custom Image extension with width support
+  const POST_IMAGE_ALIGNMENTS = ['left', 'center', 'right'] as const
+  type PostImageAlignment = (typeof POST_IMAGE_ALIGNMENTS)[number]
+
+  function isPostImageAlignment(value: unknown): value is PostImageAlignment {
+    return POST_IMAGE_ALIGNMENTS.includes(value as PostImageAlignment)
+  }
+
+  // Custom Image extension with width, caption and block alignment support
   const ResizableImage = Image.extend({
     addAttributes() {
       return {
@@ -1077,7 +1137,47 @@ const isEditing = !!post
             return { width: attrs.width, style: `width: ${attrs.width}px` }
           },
         },
+        caption: { default: null },
+        align: { default: null },
       }
+    },
+    parseHTML() {
+      return [
+        {
+          tag: 'figure[data-post-image]',
+          getAttrs: element => {
+            const image = element.querySelector('img[src]')
+            if (!image) return false
+
+            const alignment = element.getAttribute('data-align')
+            return {
+              src: image.getAttribute('src'),
+              alt: image.getAttribute('alt'),
+              title: image.getAttribute('title'),
+              width: image.getAttribute('width') || (image as HTMLElement).style.width.replace('px', '') || null,
+              height: image.getAttribute('height'),
+              caption: element.querySelector('figcaption')?.textContent?.trim() || null,
+              align: isPostImageAlignment(alignment) ? alignment : null,
+            }
+          },
+        },
+        { tag: 'img[src]:not([src^="data:"])' },
+      ]
+    },
+    renderHTML({ HTMLAttributes }) {
+      const { caption, align, ...imageAttributes } = HTMLAttributes
+      const image = ['img', mergeAttributes(this.options.HTMLAttributes, imageAttributes)] as const
+
+      if (!caption && !align) return image
+
+      const figureAttributes = {
+        'data-post-image': '',
+        ...(isPostImageAlignment(align) ? { 'data-align': align } : {}),
+      }
+
+      return caption
+        ? ['figure', figureAttributes, image, ['figcaption', {}, String(caption)]] as const
+        : ['figure', figureAttributes, image] as const
     },
   })
   import Placeholder from '@tiptap/extension-placeholder'
@@ -1647,16 +1747,21 @@ const isEditing = !!post
   const imageDialogForm = document.getElementById('image-dialog-form') as HTMLFormElement
   const imageFileInput = document.getElementById('dialog-image-file') as HTMLInputElement
   const imageUrlInput = document.getElementById('dialog-image-url') as HTMLInputElement
-  const imageAltInput = document.getElementById('dialog-image-alt') as HTMLInputElement
+  const imageCaptionInput = document.getElementById('dialog-image-caption') as HTMLInputElement
+  const imageAlignInput = document.getElementById('dialog-image-align') as HTMLSelectElement
   const imageDialogStatus = document.getElementById('dialog-image-status')!
   const imageDialogProgress = document.getElementById('dialog-image-progress') as HTMLProgressElement
   const imageDialogSubmit = document.getElementById('dialog-image-submit') as HTMLButtonElement
+  const imageCaptionEditDialog = document.getElementById('dialog-image-caption-edit') as HTMLDialogElement
+  const imageCaptionEditForm = document.getElementById('image-caption-edit-form') as HTMLFormElement
+  const imageCaptionEditInput = document.getElementById('image-caption-edit-input') as HTMLInputElement
   let imageDialogIsUploading = false
+  let selectedImagePosition: number | null = null
 
   function setImageDialogUploading(isUploading: boolean) {
     imageDialogIsUploading = isUploading
-    dialogs.image.querySelectorAll('button, input').forEach(control => {
-      ;(control as HTMLButtonElement | HTMLInputElement).disabled = isUploading
+    dialogs.image.querySelectorAll('button, input, select').forEach(control => {
+      ;(control as HTMLButtonElement | HTMLInputElement | HTMLSelectElement).disabled = isUploading
     })
     imageDialogProgress.hidden = !isUploading
     imageDialogSubmit.textContent = isUploading ? 'Enviando... 0%' : 'Inserir imagem'
@@ -1669,6 +1774,7 @@ const isEditing = !!post
     if (type === 'image') {
       setImageDialogUploading(false)
       imageDialogProgress.value = 0
+      imageAlignInput.value = 'center'
       setUploadStatus(imageDialogStatus, '')
     }
     dialog.showModal()
@@ -1713,7 +1819,8 @@ const isEditing = !!post
 
     const file = imageFileInput.files?.[0]
     const manualUrl = imageUrlInput.value.trim()
-    const alt = imageAltInput.value.trim()
+    const caption = imageCaptionInput.value.trim()
+    const align = isPostImageAlignment(imageAlignInput.value) ? imageAlignInput.value : 'center'
 
     if (!file && !manualUrl) {
       setUploadStatus(imageDialogStatus, 'Selecione uma imagem ou informe uma URL.', 'error')
@@ -1721,7 +1828,10 @@ const isEditing = !!post
     }
 
     if (!file) {
-      editor.chain().focus().setImage({ src: manualUrl, alt: alt || undefined }).run()
+      editor.chain().focus().insertContent({
+        type: 'image',
+        attrs: { src: manualUrl, alt: caption || null, caption: caption || null, align },
+      }).run()
       dialogs.image.close()
       return
     }
@@ -1738,13 +1848,29 @@ const isEditing = !!post
         setUploadStatus(imageDialogStatus, `Enviando imagem: ${roundedPercentage}%`)
       })
 
-      editor.chain().focus().setImage({ src: blob.url, alt: alt || undefined }).run()
+      editor.chain().focus().insertContent({
+        type: 'image',
+        attrs: { src: blob.url, alt: caption || null, caption: caption || null, align },
+      }).run()
       dialogs.image.close()
     } catch (error) {
       setUploadStatus(imageDialogStatus, getUploadErrorMessage(error), 'error')
     } finally {
       setImageDialogUploading(false)
     }
+  })
+
+  imageCaptionEditForm.addEventListener('submit', event => {
+    event.preventDefault()
+    if (selectedImagePosition === null) return
+
+    const caption = imageCaptionEditInput.value.trim()
+    editor.chain().focus().setNodeSelection(selectedImagePosition).updateAttributes('image', {
+      caption: caption || null,
+      alt: caption || null,
+    }).run()
+    imageCaptionEditDialog.close()
+    selectedImagePosition = null
   })
 
   // YouTube dialog submit
@@ -2087,11 +2213,19 @@ const isEditing = !!post
     imageToolbar.style.top = `${imgRect.top - toolbarH - 8}px`
     imageToolbar.style.left = `${imgRect.left + imgRect.width / 2}px`
 
-    // Highlight active size
+    // Highlight active size and alignment
     const currentWidth = node.attrs.width
-    imageToolbar.querySelectorAll('.image-toolbar-btn').forEach(btn => {
+    imageToolbar.querySelectorAll('[data-img-width]').forEach(btn => {
       const w = (btn as HTMLElement).dataset.imgWidth
-      btn.classList.toggle('is-active', w === String(currentWidth || ''))
+      const isActive = w === String(currentWidth || '')
+      btn.classList.toggle('is-active', isActive)
+      btn.setAttribute('aria-pressed', String(isActive))
+    })
+    const currentAlign = isPostImageAlignment(node.attrs.align) ? node.attrs.align : 'left'
+    imageToolbar.querySelectorAll('[data-img-align]').forEach(btn => {
+      const isActive = (btn as HTMLElement).dataset.imgAlign === currentAlign
+      btn.classList.toggle('is-active', isActive)
+      btn.setAttribute('aria-pressed', String(isActive))
     })
   }
 
@@ -2101,7 +2235,26 @@ const isEditing = !!post
   imageToolbar.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('.image-toolbar-btn') as HTMLElement | null
     if (!btn) return
+
+    const align = btn.dataset.imgAlign
+    if (isPostImageAlignment(align)) {
+      editor.chain().focus().updateAttributes('image', { align }).run()
+      updateImageToolbar()
+      return
+    }
+
+    if ('imgCaption' in btn.dataset) {
+      const { node } = editor.state.selection as any
+      if (!node || node.type.name !== 'image') return
+      selectedImagePosition = editor.state.selection.from
+      imageCaptionEditInput.value = node.attrs.caption || ''
+      imageCaptionEditDialog.showModal()
+      imageCaptionEditInput.focus()
+      return
+    }
+
     const width = btn.dataset.imgWidth
+    if (width === undefined) return
     if (width) {
       editor.chain().focus().updateAttributes('image', { width: Number(width) }).run()
     } else {

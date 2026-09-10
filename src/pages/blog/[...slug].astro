@@ -1,27 +1,21 @@
 ---
-export const prerender = false
-
+import type { GetStaticPaths } from 'astro'
 import { db } from '@/db'
 import { posts } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import BlogPost from '@/layouts/BlogPost.astro'
 import { resolvePostSocialImage } from '@/lib/post-images'
 
-const { slug } = Astro.params
+export const getStaticPaths = (async () => {
+  const publishedPosts = await db.select().from(posts).where(eq(posts.published, true))
 
-if (!slug) {
-  return Astro.redirect('/blog')
-}
+  return publishedPosts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }))
+}) satisfies GetStaticPaths
 
-const [post] = await db
-  .select()
-  .from(posts)
-  .where(and(eq(posts.slug, slug), eq(posts.published, true)))
-
-if (!post) {
-  return Astro.redirect('/404')
-}
-
+const { post } = Astro.props
 const socialImage = resolvePostSocialImage(post)
 ---
 

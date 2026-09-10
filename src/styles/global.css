@@ -119,8 +119,38 @@ h6 {
 }
 
 .prose img {
+  max-width: 100%;
   border-radius: 12px;
   margin: 2em 0;
+}
+
+.prose figure[data-post-image] {
+  width: fit-content;
+  max-width: 100%;
+  margin: 2em 0;
+}
+
+.prose figure[data-post-image][data-align='center'] {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.prose figure[data-post-image][data-align='right'] {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.prose figure[data-post-image] img {
+  display: block;
+  margin: 0;
+}
+
+.prose figure[data-post-image] figcaption {
+  margin-top: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .prose blockquote {
