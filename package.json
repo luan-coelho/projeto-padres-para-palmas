@@ -4,12 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --port 3000",
-    "build": "drizzle-kit migrate && astro build",
+    "build": "node scripts/migrate.mjs && astro build",
     "preview": "astro preview",
     "check": "astro check",
     "test": "node --test src/lib/post-images.test.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "node scripts/migrate.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
